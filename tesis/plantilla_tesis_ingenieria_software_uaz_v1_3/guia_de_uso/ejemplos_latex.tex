@@ -1,0 +1,70 @@
+% ============================================================================
+% EJEMPLOS LATEX LISTOS PARA COPIAR
+% Este archivo no se compila automáticamente.
+% ============================================================================
+
+% --- 1. Citar una referencia ------------------------------------------------
+% Primero agregue la referencia a bibliografia/referencias.bib.
+% Después cítela desde el texto:
+
+La ingeniería de requerimientos permite comprender y documentar las necesidades
+del producto \cite{wiegers2013software}.
+
+% Para citar varias fuentes juntas:
+% \cite{claveUno,claveDos,claveTres}
+
+% --- 2. Agregar y citar una imagen -------------------------------------------
+% Suba la imagen a la subcarpeta imagenes del capítulo correspondiente.
+% Use nombres descriptivos, sin espacios ni acentos, por ejemplo:
+% arquitectura_contenedores.pdf
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capitulos/03_metodologia/imagenes/ejemplo_imagen.jpg}
+  \caption{Descripción precisa del contenido de la figura}
+  \label{fig:ejemplo-imagen-guia}
+\end{figure}
+
+Como se observa en la \cref{fig:ejemplo-imagen-guia}, la figura debe mencionarse
+y explicarse en el texto.
+
+% --- 3. Crear y citar una tabla ----------------------------------------------
+
+\begin{table}[H]
+  \centering
+  \caption{Comparación de métodos evaluados}
+  \label{tab:comparacion-metodos-guia}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Método} & \textbf{Precisión} & \textbf{Tiempo (s)} \\
+    \midrule
+    Método A & 0.91 & 2.4 \\
+    Método B & 0.88 & 1.7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La \cref{tab:comparacion-metodos-guia} resume las métricas obtenidas bajo las
+mismas condiciones experimentales.
+
+% --- 4. Crear, listar y citar una ecuación numerada --------------------------
+
+\begin{equation}
+  \mathrm{precision}=\frac{TP}{TP+FP}.
+  \label{eq:precision-guia}
+\end{equation}
+\agregarEcuacionAlIndice{Cálculo de la precisión}
+
+La \cref{eq:precision-guia} define la precisión a partir de verdaderos positivos
+y falsos positivos.
+
+% --- 5. Referencias cruzadas -------------------------------------------------
+% Use prefijos consistentes en las etiquetas:
+% cap: capítulo    sec: sección    fig: figura
+% tab: tabla       eq: ecuación    ap: apéndice
+%
+% Ejemplos:
+% \cref{cap:metodologia}
+% \cref{fig:ejemplo-imagen-guia}
+% \cref{tab:comparacion-metodos-guia}
+% \cref{eq:precision-guia}

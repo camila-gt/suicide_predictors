@@ -1,0 +1,235 @@
+\chapter{Metodología}
+\label{cap:metodologia}
+
+\instruccion{Este capítulo debe permitir comprender y, cuando sea posible,
+replicar tanto la investigación como la construcción de la solución. Integra
+dos planos relacionados pero distintos: el método de investigación explica cómo
+se obtendrá y analizará evidencia; la metodología de desarrollo explica cómo se
+construyó la propuesta de ingeniería de software. Adapte las secciones al tipo
+de tesis, pero conserve clara la relación entre problema, hipótesis, objetivos,
+actividades de desarrollo y estrategia de evaluación.}
+
+\section{Enfoque y diseño de la investigación}
+
+Defina y justifique la ruta cuantitativa, cualitativa o mixta, así como el
+alcance y diseño del estudio. Precise si se trata, por ejemplo, de un experimento,
+cuasiexperimento, estudio no experimental, estudio de caso, encuesta, benchmark,
+comparación de métodos, análisis de repositorios, ciencia del diseño o una
+combinación congruente. Explique por qué permite responder las preguntas y
+contrastar la hipótesis.
+
+\instruccion{Incluya las variables, constructos o categorías de análisis; sus
+definiciones conceptuales y operacionales; y los controles, tratamientos o
+condiciones comparadas cuando correspondan. No seleccione un diseño sólo por su
+nombre: describa cómo se aplica realmente en la tesis. Puede citar una referencia
+metodológica mediante \texttt{\textbackslash
+cite\{hernandezSampieri2018metodologia\}}
+\cite{hernandezSampieri2018metodologia}.}
+
+\section{Contexto, unidad de análisis y fuentes de evidencia}
+
+Delimite el entorno en el que se realiza el estudio y aquello sobre lo que se
+obtendrán conclusiones. La unidad de análisis puede estar formada por personas,
+organizaciones, procesos, repositorios, arquitecturas, algoritmos, modelos,
+versiones de un sistema, conjuntos de datos, casos o escenarios. Describa las
+fuentes de evidencia, los criterios de inclusión y exclusión, y el procedimiento
+de muestreo o selección.
+
+\instruccion{Cuando participen personas, indique población, muestra,
+reclutamiento, criterios de participación y características relevantes sin
+comprometer su identidad. Cuando se utilicen datos o software, documente origen,
+permisos, versiones, calidad, licencias y restricciones de acceso.}
+
+\section{Metodología de desarrollo de software}
+
+Explique el proceso utilizado para construir la solución y justifique por qué
+es adecuado para el problema, el equipo, el cliente, los datos y el contexto.
+Puede emplear UCD, Scrum, un proceso iterativo, prototipado, CRISP-DM, KDD u otra
+metodología, o una adaptación explícita de varias. No presente como aplicada una
+metodología si sólo se adoptaron algunos de sus artefactos.
+
+\subsection{Selección y adaptación de la metodología}
+
+Describa los principios, etapas, roles, artefactos y criterios de avance de la
+metodología elegida. Declare las adaptaciones realizadas y su justificación.
+Distinga las actividades de gestión del proyecto de las actividades que generan
+evidencia para la investigación.
+
+\subsection{Ejecución del proceso}
+
+Narre el procedimiento real por etapas, iteraciones o ciclos y explique qué se
+produjo, revisó y decidió en cada uno. Incluya participación del cliente o de
+personas usuarias, mecanismos de retroalimentación, control de cambios y
+trazabilidad cuando sean pertinentes.
+
+\instruccion{Agregue las subsecciones necesarias según la metodología aplicada.
+En UCD pueden corresponder al contexto de uso, requisitos, soluciones de diseño
+y evaluaciones iterativas; en Scrum, a planeación, sprints, revisiones y
+retrospectivas; en CRISP-DM, a comprensión del negocio y de los datos,
+preparación, modelado, evaluación y despliegue; en KDD, a selección,
+preprocesamiento, transformación, minería e interpretación. Estos nombres son
+orientativos: conserve sólo las etapas ejecutadas y no fuerce un proceso para
+que parezca más completo.}
+
+% Ejemplos de subsecciones adicionales para adaptar al proceso real:
+% \subsection{Comprensión del contexto de uso}
+% \subsection{Planeación e iteraciones de desarrollo}
+% \subsection{Preparación y transformación de datos}
+% \subsection{Modelado y evaluación iterativa}
+
+\section{Descripción de la propuesta de ingeniería de software}
+
+Presente la solución construida como resultado del proceso anterior. Adapte el
+contenido al tipo de aportación: sistema, arquitectura, modelo, algoritmo,
+proceso, conjunto de datos, servicio o intervención. La descripción debe ser
+suficiente para comprender qué se construyó y relacionarlo con los objetivos,
+sin convertir el capítulo en un manual de usuario ni en una narración línea por
+línea del código.
+
+\subsection{Visión, alcance y partes interesadas}
+
+Explique el propósito, contexto de uso, actores o clases de usuario, fronteras,
+capacidades centrales, exclusiones y dependencias de la solución. Relacione el
+alcance con el problema y los objetivos de investigación.
+
+\subsection{Requerimientos y criterios de aceptación}
+
+Sintetice requerimientos funcionales, atributos de calidad, restricciones e
+interfaces. Explique su origen, prioridad, negociación, validación y
+trazabilidad. Cuando el catálogo sea extenso, conserve aquí las decisiones
+centrales y traslade el detalle a un apéndice o repositorio versionado.
+
+\subsection{Arquitectura, diseño y datos}
+
+Documente las decisiones arquitecturales, vistas, responsabilidades, datos,
+interfaces, patrones, tácticas y alternativas descartadas. En proyectos de
+datos o aprendizaje automático incluya preparación, particiones, prevención de
+fuga de información, sesgos, linaje y versionado. Para fundamentos generales de
+ingeniería de software puede utilizarse SWEBOK \cite{bourque2014swebok}.
+
+\subsection{Implementación, despliegue y operación}
+
+Explique módulos, tecnologías, dependencias, configuraciones e infraestructura
+necesarias para comprender y reproducir el artefacto. Documente observabilidad,
+respaldo, recuperación y versiones cuando correspondan. Señale el repositorio o
+identificador persistente si su publicación está autorizada.
+
+\instruccion{Puede fusionar, renombrar o ampliar estas subsecciones según la
+naturaleza de la propuesta. Debe existir trazabilidad desde necesidades y
+requerimientos hasta decisiones de diseño, implementación y criterios de
+aceptación.}
+
+\instruccion{Guarde cada imagen en la subcarpeta correspondiente al capítulo.
+Inclúyala mediante el comando mostrado en la guía de ejemplos, asigne una
+etiqueta con el prefijo \texttt{fig:} y cítela siempre desde el texto.}
+
+\ifmostrarEjemplos
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.23\textwidth]{capitulos/03_metodologia/imagenes/ejemplo_imagen.jpg}
+  \caption{Ejemplo de una imagen incorporada desde la carpeta del capítulo}
+  \label{fig:ejemplo-imagen}
+\end{figure}
+
+Como se observa en la \cref{fig:ejemplo-imagen}, una figura debe mencionarse y
+explicarse en el texto; no debe aparecer como elemento aislado.
+\fi
+
+\section{Verificación, validación y aprobación}
+
+Defina cómo se comprobará la calidad técnica de la solución, cómo se determinará
+si responde a las necesidades y cómo se formalizará la aceptación del cliente o
+responsable del producto. Relacione cada actividad con requerimientos, atributos
+de calidad, objetivos y criterios establecidos antes de observar los resultados.
+
+\subsection{Verificación técnica}
+
+Describa pruebas unitarias, de integración, sistema, seguridad, rendimiento,
+compatibilidad, calidad de datos u otras verificaciones pertinentes. Indique
+entorno, casos, datos de prueba, herramientas, responsables y criterio de éxito.
+
+\subsection{Validación con cliente o personas usuarias}
+
+Explique las tareas, prototipos o versiones que se evaluarán, quiénes
+participarán, qué instrumento o escala se utilizará y cómo se analizará la
+evidencia. Si el proceso incluye revisiones iterativas, distinga la
+retroalimentación utilizada para mejorar el producto de la evaluación final que
+permitirá sostener las conclusiones de la tesis.
+
+\subsection{Aprobación y entrega de la solución}
+
+Establezca los criterios de aceptación, evidencia de cumplimiento y mecanismo
+de aprobación: acta, revisión de sprint, lista de aceptación, dictamen del
+responsable o equivalente. Documente también pendientes, restricciones y
+condiciones de entrega.
+
+\instruccion{La aprobación del cliente confirma que la solución satisface
+acuerdos del proyecto, pero no sustituye por sí sola la validación científica.
+Si la hipótesis afirma mejoras en usabilidad, eficacia, desempeño u otro
+resultado, se necesita evidencia obtenida con un diseño, métricas e instrumentos
+congruentes. Los resultados de estas actividades se reportan en el capítulo de
+Resultados; aquí se describe cómo se realizarán.}
+
+\section{Estrategia de evaluación y análisis de datos}
+
+Defina qué se medirá u observará, con qué instrumentos, métricas o criterios,
+cómo se procesarán los datos y qué regla permitirá interpretar la hipótesis,
+responder las preguntas y valorar los objetivos. Incluya, cuando corresponda,
+datos faltantes o atípicos, supuestos, pruebas estadísticas, tamaño del efecto,
+análisis cualitativo, triangulación, análisis de errores o comparación con una
+línea base.
+
+\instruccion{En software interactivo justifique participantes, tareas e
+instrumentos como SUS, UEQ, CSUQ o TAM sólo cuando midan el constructo requerido
+y respete su forma de aplicación. En algoritmos o modelos documente conjuntos
+de datos, particiones, líneas base, métricas, repeticiones e incertidumbre. En
+evaluaciones técnicas utilice escenarios y medidas verificables de atributos de
+calidad.}
+
+\ifmostrarEjemplos
+\begin{table}[H]
+\centering
+\caption{Ejemplo de matriz para relacionar hipótesis, evidencia y análisis}
+\label{tab:estrategia-evaluacion}
+\small
+\begin{tabularx}{\textwidth}{L{1.8cm}YYY}
+\toprule
+\textbf{Elemento} & \textbf{Evidencia requerida} &
+\textbf{Métrica o criterio} & \textbf{Forma de análisis} \\
+\midrule
+RQ1 & Resultados de los métodos A y B sobre el mismo conjunto de prueba. &
+Precisión y tiempo de ejecución. & Comparación descriptiva y contraste definido. \\
+H1 & Mediciones repetidas bajo condiciones controladas. &
+Diferencia e intervalo de confianza. & Prueba seleccionada y tamaño del efecto. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Una ecuación numerada se escribe con el entorno
+\texttt{equation}. Por ejemplo, la media aritmética de una muestra se expresa
+como
+
+\begin{equation}
+  \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i.
+  \label{eq:media-muestral}
+\end{equation}
+\agregarEcuacionAlIndice{Media aritmética de una muestra}
+
+La \cref{eq:media-muestral} se cita desde el texto mediante
+\texttt{\textbackslash cref}. Consulte el archivo de ejemplos para ver el bloque
+completo.
+\fi
+
+\section{Consideraciones éticas, validez y reproducibilidad}
+
+Describa consentimiento, privacidad, confidencialidad, tratamiento de datos,
+riesgos para participantes, licencias y propiedad intelectual cuando sean
+pertinentes. Analice amenazas a la validez y medidas de mitigación. Declare qué
+materiales permitirán auditar o reproducir el estudio: código, datos permitidos,
+contenedores, scripts, instrumentos, modelos, semillas y versiones de
+herramientas.
+
+\instruccion{No use una lista genérica de amenazas. Explique cuáles afectan
+realmente al estudio, por qué podrían alterar sus conclusiones y qué acciones se
+tomaron para reducirlas. Si algún dato o artefacto no puede publicarse, indique
+la razón y el procedimiento de acceso, si existe.}

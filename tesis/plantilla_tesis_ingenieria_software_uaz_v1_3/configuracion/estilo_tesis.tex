@@ -1,0 +1,270 @@
+% ================================================================
+% CONFIGURACIÓN TIPOGRÁFICA E INSTITUCIONAL
+% ================================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% provide=* permite compilar también en instalaciones modernas de Babel que
+% distribuyen el español mediante archivos de configuración regional.
+\usepackage[provide=*,spanish]{babel}
+% Familia serif compatible con Times y disponible en instalaciones estándar.
+\usepackage{mathptmx}
+\usepackage[letterpaper,left=3.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage[nottoc]{tocbibind}
+\usepackage{etoolbox}
+\usepackage[toc,page]{appendix}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage[capitalise,noabbrev,nameinlink]{cleveref}
+
+\definecolor{uazAzul}{HTML}{0A2A5E}
+\definecolor{uazAzulClaro}{HTML}{EAF0F8}
+\definecolor{uazDorado}{HTML}{D6A833}
+\definecolor{grisTexto}{HTML}{333333}
+
+\graphicspath{{recursos_institucionales/logos/}}
+\setstretch{1.5}
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{uazAzul}}
+  {\filleft\Large\chaptername\ \thechapter}
+  {0.5ex}
+  {\titlerule\vspace{1ex}\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{30pt}
+\titleformat{\section}{\Large\bfseries\color{uazAzul}}{\thesection}{0.75em}{}
+\titleformat{\subsection}{\large\bfseries\color{grisTexto}}{\thesubsection}{0.75em}{}
+
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[L]{\small Ingeniería de Software}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\captionsetup{font=small,labelfont=bf,justification=centering}
+\captionsetup[table]{position=top}
+% Babel establece algunos títulos como "Índice" y "Cuadro". Se fuerzan los
+% términos aprobados para esta plantilla después de cargar el idioma.
+\addto\captionsspanish{%
+  \renewcommand{\contentsname}{Tabla de contenido}%
+  \renewcommand{\listfigurename}{Índice de figuras}%
+  \renewcommand{\listtablename}{Índice de tablas}%
+  \renewcommand{\tablename}{Tabla}%
+  \renewcommand{\bibname}{Referencias}%
+}
+\renewcommand{\appendixname}{Apéndice}
+\renewcommand{\appendixpagename}{Apéndices}
+\renewcommand{\appendixtocname}{Apéndices}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{uazAzul}\bfseries,
+  commentstyle=\color{gray},
+  showstringspaces=false,
+  captionpos=b
+}
+
+% Instrucciones editoriales removibles. No forman parte del contenido de la
+% tesis: pueden ocultarse todas desde configuracion/datos_tesis.tex o eliminarse
+% una por una borrando la instrucción correspondiente.
+\newif\ifmostrarInstrucciones
+\mostrarInstruccionestrue
+\newif\ifmostrarEjemplos
+\mostrarEjemplostrue
+\newcommand{\instruccion}[1]{%
+  \ifmostrarInstrucciones
+    \par\smallskip
+    \noindent{\small\itshape\color{gray}\textbf{Instrucción:} #1}\par
+    \smallskip
+  \fi
+}
+
+% Fecha institucional automática. La fecha se toma del sistema que compila el
+% documento (por ejemplo, los servidores de Overleaf), por lo que no requiere
+% consultar servicios externos ni escribir el mes o el año manualmente.
+\newcommand{\nombreMesActual}{%
+  \ifcase\month
+  \or enero\or febrero\or marzo\or abril\or mayo\or junio
+  \or julio\or agosto\or septiembre\or octubre\or noviembre\or diciembre
+  \fi
+}
+\newcommand{\mesAnioAutomatico}{\nombreMesActual\ de \the\year}
+\newcommand{\fechaCompletaAutomatica}{\the\day\ de \nombreMesActual\ de \the\year}
+
+% Índice de ecuaciones. Después de cada ecuación que deba listarse utilice:
+% \agregarEcuacionAlIndice{Descripción breve de la ecuación}
+\makeatletter
+\newcommand{\listofequations}{%
+  \chapter*{Índice de ecuaciones}%
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Índice de ecuaciones}%
+  \@starttoc{loe}%
+}
+\newcommand{\l@equation}{\@dottedtocline{1}{1.5em}{3.2em}}
+\makeatother
+\newcommand{\agregarEcuacionAlIndice}[1]{%
+  \addcontentsline{loe}{equation}{\protect\numberline{\theequation}#1}%
+}
+
+\newif\iftieneCodirector
+\tieneCodirectorfalse
+
+\newcommand{\logosInstitucionales}[1][2.2cm]{%
+  \begin{center}
+    \begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X}
+      \includegraphics[height=#1,keepaspectratio]{uaz_oficial.png} &
+      \includegraphics[height=#1,keepaspectratio]{unidad_ingenieria_electrica.png} &
+      \includegraphics[height=#1,keepaspectratio]{ingenieria_software.jpg}
+    \end{tabularx}
+  \end{center}
+}
+
+\newcommand{\bloqueDireccion}{%
+  \textbf{Dirección de tesis}\par
+  \gradoDirector\ \nombreDirector\par
+  \iftieneCodirector
+    \vspace{0.4em}
+    \textbf{Codirección de tesis}\par
+    \gradoCodirector\ \nombreCodirector\par
+  \fi
+}
+
+\newcommand{\portadaExterior}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \logosInstitucionales[2.45cm]
+    \vspace{0.65cm}
+    \begin{center}
+      {\Large\bfseries\color{uazAzul} UNIVERSIDAD AUTÓNOMA DE ZACATECAS\par}
+      \vspace{0.15cm}
+      {\large ``Francisco García Salinas''\par}
+      \vspace{0.25cm}
+      {\large\bfseries UNIDAD ACADÉMICA DE INGENIERÍA ELÉCTRICA\par}
+      {\large PROGRAMA ACADÉMICO DE INGENIERÍA DE SOFTWARE\par}
+      \vfill
+      {\LARGE\bfseries\color{uazAzul}\tituloTesis\par}
+      \vfill
+      {\large\bfseries \modalidadTitulacion\par}
+      \vspace{0.35cm}
+      {que para obtener el título de\par}
+      \vspace{0.15cm}
+      {\Large\bfseries \gradoObtener\par}
+      \vspace{0.65cm}
+      {presenta\par}
+      \vspace{0.15cm}
+      {\Large\bfseries \autorTesis\par}
+      \vfill
+      \bloqueDireccion
+      % Esta portada no lleva fecha: se utiliza como pasta impresa.
+    \end{center}
+  \end{titlepage}
+}
+
+\newcommand{\portadaInterior}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \logosInstitucionales[2.15cm]
+    \vspace{0.45cm}
+    \begin{center}
+      {\Large\bfseries\color{uazAzul} UNIVERSIDAD AUTÓNOMA DE ZACATECAS\par}
+      {\large ``Francisco García Salinas''\par}
+      \vspace{0.25cm}
+      {\large\bfseries UNIDAD ACADÉMICA DE INGENIERÍA ELÉCTRICA\par}
+      {\large PROGRAMA ACADÉMICO DE INGENIERÍA DE SOFTWARE\par}
+      \vfill
+      {\LARGE\bfseries\color{uazAzul}\tituloTesis\par}
+      \vfill
+      {\large\bfseries \modalidadTitulacion\par}
+      {que para obtener el título de\par}
+      {\Large\bfseries \gradoObtener\par}
+      \vspace{0.55cm}
+      {presenta\par}
+      {\Large\bfseries \autorTesis\par}
+      \vspace{0.55cm}
+      \bloqueDireccion
+      \vfill
+      {\lugarPublicacion\par}
+      {\mesAnioPublicacion\par}
+    \end{center}
+  \end{titlepage}
+}
+
+\newcommand{\lineaFirma}[2]{%
+  \vspace{1.15cm}
+  \noindent\makebox[\textwidth][c]{\rule{8.2cm}{0.4pt}}\par
+  \begin{center}\textbf{#1}\par\small #2\end{center}
+}
+
+\newcommand{\firmaCompacta}[2]{%
+  \begin{minipage}[t]{\linewidth}
+    \centering
+    \vspace{0.85cm}
+    \rule{0.88\linewidth}{0.4pt}\par
+    \vspace{0.15cm}
+    \textbf{#1}\par
+    \small #2
+  \end{minipage}
+}
+
+\newcommand{\contraportada}{%
+  \clearpage
+  \thispagestyle{empty}
+  \null\vfill
+  \logosInstitucionales[2.35cm]
+  \vspace{0.8cm}
+  \begin{center}
+    {\large\bfseries\color{uazAzul} UNIVERSIDAD AUTÓNOMA DE ZACATECAS\par}
+    {\normalsize Unidad Académica de Ingeniería Eléctrica\par}
+    {\normalsize Programa Académico de Ingeniería de Software\par}
+    \vspace{0.8cm}
+    {\small \autorTesis\par}
+    \vspace{0.8cm}
+    {\small \lugarPublicacion\par}
+  \end{center}
+  \vfill\null
+  \clearpage
+}
+
+\crefname{figure}{figura}{figuras}
+\crefname{table}{tabla}{tablas}
+\crefname{equation}{ecuación}{ecuaciones}
+\crefname{chapter}{capítulo}{capítulos}
+\crefname{section}{sección}{secciones}

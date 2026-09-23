@@ -1,0 +1,80 @@
+\chapter{Resultados}
+\label{cap:resultados}
+
+\instruccion{Reporte toda la evidencia obtenida, incluidos resultados nulos,
+negativos o inesperados. La organización debe seguir la estrategia de
+evaluación definida en metodología y facilitar el contraste de la hipótesis y
+el cumplimiento de los objetivos. No es obligatorio crear una subsección por
+pregunta de investigación ni presentar el capítulo como una bitácora del
+desarrollo. Separe la evidencia de su interpretación amplia, que corresponde al
+capítulo de discusión.}
+
+\section{Evidencia obtenida}
+
+Describa brevemente qué evaluación se ejecutó y qué evidencia quedó disponible:
+participantes, casos, conjuntos de datos, ejecuciones, versiones, escenarios,
+instrumentos o registros. Reporte exclusiones y sus causas, datos faltantes y
+características necesarias para interpretar los resultados. No revele
+información que permita identificar personas sin autorización.
+
+\section{Resultados de la evaluación}
+
+Presente tablas, figuras, estimaciones, intervalos, distribuciones, categorías,
+citas de participantes o evidencia técnica según el diseño. Organice esta
+sección por dimensión evaluada, iteración, experimento, método comparado,
+escenario o criterio de aceptación: elija la estructura que haga visible la
+relación entre la evidencia y lo prometido en la metodología. Toda figura o
+tabla debe citarse y explicarse en el texto.
+
+\instruccion{Seleccione la ruta de evaluación apropiada. En software dirigido a
+personas, incluya validación con usuarios representativos mediante tareas y un
+instrumento o escala justificados; reporte tamaño y características de la
+muestra, condiciones de aplicación, puntuaciones, dispersión y comentarios
+relevantes. En comparaciones de métodos, algoritmos, CRISP-DM o KDD, reporte
+conjuntos de datos, particiones, líneas base, métricas, repeticiones,
+incertidumbre y análisis de errores. En evaluaciones técnicas, use criterios
+medibles o escenarios de atributos de calidad para rendimiento, seguridad,
+confiabilidad, mantenibilidad u otras propiedades. Combine rutas cuando el
+artefacto tenga tanto interacción humana como comportamiento técnico.}
+
+\ifmostrarEjemplos
+La \cref{tab:ejemplo-validacion-usuarios} ilustra una forma compacta de resumir
+una validación con usuarios. Los nombres y valores son ficticios: reemplácelos
+por el instrumento, la escala y los datos reales del estudio.
+
+\begin{table}[H]
+\centering
+\caption{Ejemplo de resultados de validación con usuarios}
+\label{tab:ejemplo-validacion-usuarios}
+\small
+\begin{tabularx}{\textwidth}{L{3.1cm}L{2.5cm}L{2.3cm}Y}
+\toprule
+\textbf{Dimensión} & \textbf{Instrumento o escala} &
+\textbf{Resultado} & \textbf{Criterio de interpretación} \\
+\midrule
+Usabilidad percibida & Escala validada seleccionada &
+Media y dispersión & Umbral o guía definida antes del análisis \\
+Satisfacción & Ítems y rango de respuesta &
+Distribución de respuestas & Criterio establecido en metodología \\
+Eficacia en tareas & Registro de tareas &
+Porcentaje de éxito & Meta de aceptación del sistema \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\fi
+
+\section{Contraste de la hipótesis y cumplimiento de objetivos}
+
+Integre la evidencia necesaria para establecer si la hipótesis recibió apoyo y
+en qué grado se alcanzó cada objetivo. Si la hipótesis es estadística, reporte
+la prueba o modelo, supuestos, estimación, incertidumbre, tamaño del efecto y la
+decisión sobre la hipótesis nula. Si se formuló una hipótesis de diseño o una
+proposición, confróntela con criterios de aceptación y fuentes de evidencia
+previamente definidos. Evite afirmar que una hipótesis fue ``demostrada'' y no
+confunda ausencia de evidencia con evidencia de ausencia.
+
+\instruccion{Las preguntas de investigación siguen siendo una referencia para
+comprobar que no quedó ninguna sin atender, pero no tienen que convertirse en
+subtítulos. Los hallazgos adicionales pueden incorporarse al final de la sección
+correspondiente, identificándolos como exploratorios cuando no estaban previstos
+antes de observar los datos.}

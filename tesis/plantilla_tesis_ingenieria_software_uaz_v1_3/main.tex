@@ -1,0 +1,72 @@
+% Plantilla oficial propuesta para tesis de Ingeniería de Software
+% Universidad Autónoma de Zacatecas
+% Compile con: latexmk -pdf main.tex
+
+\documentclass[12pt,letterpaper,oneside]{report}
+
+\input{configuracion/estilo_tesis}
+\input{configuracion/datos_tesis}
+
+\hypersetup{
+  pdftitle={\tituloTesis},
+  pdfauthor={\autorTesis},
+  pdfsubject={Tesis de Licenciatura en Ingeniería de Software},
+  pdfkeywords={\palabrasClavePdf}
+}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+
+% La primera página corresponde a la pasta impresa y deliberadamente no lleva fecha.
+\portadaExterior
+
+% La segunda página es la portada interior e incluye los datos institucionales y la fecha.
+\portadaInterior
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\input{secciones_preliminares/acta_aprobacion}
+\input{secciones_preliminares/declaracion_autoria}
+\input{secciones_preliminares/dedicatoria}
+\input{secciones_preliminares/agradecimientos}
+\input{secciones_preliminares/resumen}
+\input{secciones_preliminares/abstract}
+
+% Cada índice comienza en una página nueva. La tabla de contenido no comparte
+% su primera página con ningún otro elemento preliminar.
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+\listofequations
+\clearpage
+\input{secciones_preliminares/acronimos_y_simbolos}
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{capitulos/01_introduccion/introduccion}
+\include{capitulos/02_estado_del_arte_y_marco_teorico/estado_del_arte_y_marco_teorico}
+\include{capitulos/03_metodologia/metodologia}
+\include{capitulos/04_resultados/resultados}
+\include{capitulos/05_discusion/discusion}
+\include{capitulos/06_conclusiones/conclusiones}
+
+\clearpage
+\bibliographystyle{ieeetr}
+\bibliography{bibliografia/referencias}
+
+\appendix
+\include{apendices/apendice_a_instrumentos}
+\include{apendices/apendice_b_evidencia_tecnica}
+
+\contraportada
+
+\end{document}

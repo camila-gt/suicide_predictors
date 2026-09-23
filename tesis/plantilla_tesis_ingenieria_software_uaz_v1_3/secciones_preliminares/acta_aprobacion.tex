@@ -1,0 +1,32 @@
+\chapter*{Aprobación de la tesis}
+\addcontentsline{toc}{chapter}{Aprobación de la tesis}
+\thispagestyle{plain}
+
+La tesis titulada \textbf{\tituloTesis}, elaborada por \textbf{\autorTesis},
+ha sido revisada y aprobada como requisito para obtener el título de
+\textbf{\gradoObtener}.
+
+\vspace{0.35cm}
+\begingroup
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.05}
+\noindent\begin{tabularx}{\textwidth}{YY}
+  \firmaCompacta{\gradoDirector\ \nombreDirector}{Dirección de tesis} &
+  \iftieneCodirector
+    \firmaCompacta{\gradoCodirector\ \nombreCodirector}{Codirección de tesis}
+  \else
+    \mbox{}
+  \fi
+\end{tabularx}
+\vspace{0.3cm}
+\noindent\begin{tabularx}{\textwidth}{YYY}
+  \firmaCompacta{\gradoSinodalUno\ \nombreSinodalUno}{Sinodal} &
+  \firmaCompacta{\gradoSinodalDos\ \nombreSinodalDos}{Sinodal} &
+  \firmaCompacta{\gradoSinodalTres\ \nombreSinodalTres}{Sinodal}
+\end{tabularx}
+\endgroup
+
+\vfill
+\begin{center}
+  \lugarPublicacion, \mesAnioPublicacion
+\end{center}
