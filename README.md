@@ -2,6 +2,8 @@
 
 Este proyecto utiliza una metodología de **Minería de Datos (KDD)** y **Machine Learning supervisado explicable (SHAP)** para predecir el riesgo de intento de suicidio en adolescentes mexicanos de 10 a 19 años a partir de los datos crudos de la **ENSANUT Continua 2024**, analizando el abuso sexual infantil (ASI) como un predictor de riesgo central.
 
+🌐 **Demo en vivo (Streamlit Cloud):** [https://suicidepredictors.streamlit.app/](https://suicidepredictors.streamlit.app/)
+
 ---
 
 ## Requisitos previos
