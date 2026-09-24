@@ -8,3 +8,14 @@ __pycache__/
 .streamlit/
 Docs/
 .ruff_cache/
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.loe
+*.lof
+*.log
+*.lot
+*.toc
+*.pdf
+*.out
