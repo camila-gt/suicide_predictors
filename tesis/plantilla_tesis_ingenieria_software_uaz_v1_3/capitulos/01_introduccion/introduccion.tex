@@ -1,108 +1,103 @@
 \chapter{Introducción}
 \label{cap:introduccion}
 
-\instruccion{Este capítulo conduce desde el contexto general hasta el problema
-específico que la tesis resolverá o estudiará. Al terminarlo, la persona lectora
-debe comprender qué se investigó, por qué importa, qué respuesta se buscó y bajo
-qué límites. Evite convertir la introducción en un resumen del marco teórico.}
+El abuso sexual infantil (ASI) es una de las formas de victimización más graves durante la niñez y la adolescencia, con consecuencias que trascienden el momento del evento traumático y se prolongan a lo largo del desarrollo biopsicosocial del individuo \cite{current_barth_2013}. Entre las manifestaciones clínicas asociadas a esta victimización, el comportamiento suicida ocupa un lugar de particular urgencia: los adolescentes mexicanos sobrevivientes de ASI presentan una probabilidad de intento e ideación suicida considerablemente mayor que sus pares no expuestos \cite{abuso_valdezsantiago_2020}. En México, este panorama se ha visto agravado en los últimos años por el incremento simultáneo de ambos fenómenos, el abuso sexual infantil y el comportamiento suicida adolescente, lo que sitúa este cruce entre victimización y autolesión como un problema de salud pública prioritario.
+
+La atención oportuna de este riesgo depende, en gran medida, de la capacidad del primer nivel de atención médica para identificar tempranamente a los adolescentes en mayor vulnerabilidad. Sin embargo, este dominio enfrenta una tensión no resuelta: las herramientas de cribado clínico tradicionales tienen una capacidad predictiva limitada \cite{linthicumMachineLearningSuicide2019}, y los modelos computacionales que han demostrado mayor exactitud, desarrollados mediante algoritmos de Machine Learning, suelen operar como sistemas opacos ("cajas negras") que no permiten al personal de salud comprender las razones detrás de una predicción de riesgo, lo cual limita su confianza y su utilidad clínica real \cite{tangAnalysisEvaluationExplainable2024}.
+
+Ante este contexto, la presente investigación explora si es posible construir un modelo de estratificación de riesgo de intento de suicidio en adolescentes mexicanos sobrevivientes de ASI que sea, a la vez, predictivamente sólido y clínicamente interpretable, integrando técnicas de ciencia de datos con metodologías de Inteligencia Artificial Explicable (XAI) sobre los microdatos de la Encuesta Nacional de Salud y Nutrición (ENSANUT) Continua 2024.
 
 \section{Contexto y antecedentes del problema}
 
-Describa el contexto organizacional, social, científico o tecnológico en el que
-surge el problema. Presente únicamente los antecedentes indispensables y
-respalde las afirmaciones verificables con fuentes académicas o institucionales.
-Explique quién experimenta el problema, dónde ocurre y cómo se manifiesta.
+\subsection{Contexto epidemiológico del Abuso Sexual Infantil en México}
 
-\instruccion{Aquí se presentan los antecedentes propios del problema y su
-contexto: cómo surgió, qué situación lo produjo y por qué debe atenderse. No
-realice todavía una comparación extensa de investigaciones o soluciones; esa
-función corresponde al estado del arte del capítulo siguiente.}
+A nivel internacional, la prevalencia acumulada del abuso sexual infantil (ASI) se ubica entre el 10\% y el 20\% en el sexo femenino, y por debajo del 10\% en el masculino \cite{current_barth_2013}. En México, la medición de este fenómeno ha mostrado un comportamiento dinámico y un aumento sostenido en los últimos años. A partir de los microdatos de la Encuesta Nacional de Salud y Nutrición (ENSANUT) 2018-19, se estimó inicialmente una prevalencia nacional de ASI del 2.5\% en la población de 10 a 19 años, con un 3.8\% en mujeres y un 1.2\% en hombres \cite{abuso_valdezsantiago_2020}. Los análisis de tendencia de Rivera-Rivera et al. \cite{trends_riverarivera_2025} revelaron después un repunte mucho mayor: la prevalencia de abuso sexual en menores de 18 años en México pasó de 2.22\% en 2018 a 5.66\% en 2023, un incremento del 154.95\% en solo cinco años. Este salto coincidió con el confinamiento por la pandemia de COVID-19, que recluyó a los menores en sus hogares junto a potenciales agresores, mientras el desempleo, el hacinamiento y el consumo nocivo de alcohol agravaban la tensión y la violencia doméstica intrafamiliar \cite{trends_riverarivera_2025}.
+
+Existe además una marcada asimetría de género y de edad en la exposición al trauma. Las niñas y adolescentes mujeres cargan de forma desproporcionada con esta violencia: tienen casi tres veces más probabilidad de sufrir abuso sexual durante su minoría de edad que los varones (AOR = 2.83, IC95\%: 1.72--4.68) \cite{trends_riverarivera_2025}. La edad también se asocia con el autorreporte; los adolescentes de 14 a 17 años tienen casi el doble de probabilidad de reportar antecedentes de ASI que el grupo de 10 a 13 años (AOR = 1.89, IC95\%: 1.25--2.86), lo que refleja tanto una acumulación del riesgo de exposición a lo largo de la vida como una mayor madurez cognitiva para nombrar la victimización \cite{trends_riverarivera_2025}. El perfil de riesgo de las sobrevivientes de ASI se agrava, a su vez, por la concurrencia de otros indicadores de salud mental: las adolescentes expuestas presentan una probabilidad significativamente mayor de desarrollar sintomatología depresiva moderada a severa (RM = 2.09) y de experimentar ideación suicida constante (RM = 5.77) frente a sus pares no expuestos \cite{abuso_valdezsantiago_2020}.
+
+El elemento más crítico de esta problemática es el entorno relacional de la perpetración y las barreras estructurales que impiden el acceso a la justicia y a la salud mental postevento en México. A diferencia de la percepción común que sitúa el peligro en el ámbito público, la mayoría de las agresiones sexuales contra menores ocurre dentro del círculo cercano o el propio núcleo familiar: entre el 43.1\% y el 78.5\% de los perpetradores son familiares directos de la víctima \cite{trends_riverarivera_2025,abuso_valdezsantiago_2020}. Esta cercanía del agresor genera una distorsión psicológica profunda en el menor y favorece el "secreto familiar" mediante manipulación, culpa y miedo \cite{trends_riverarivera_2025,abuso_valdezsantiago_2020}. Como consecuencia, la tasa de denuncia formal ante las autoridades se mantiene por debajo del 16\%; los principales motivos para no judicializar la agresión son el miedo a las represalias (31.1\%) y la vergüenza (18.1\%) \cite{abuso_valdezsantiago_2020}. Este aislamiento se extiende también a la atención especializada: alrededor del 68.3\% de los adolescentes que sufrieron abuso sexual infantil nunca recibió atención médica, terapéutica o psicológica posterior a la agresión \cite{abuso_valdezsantiago_2020}.
+
+\subsection{Modelo de vulnerabilidad acumulada y mediadores clínicos}
+
+La conceptualización del riesgo autolítico en adolescentes ha evolucionado hacia marcos de vulnerabilidad acumulada, que reconocen que el trauma del abuso sexual interactúa con las desigualdades estructurales y la acumulación de desventajas socioambientales, o Determinantes Sociales de la Salud (SDoH). El estudio de cohorte longitudinal de Colburn et al. \cite{colburnCumulativeDeterminantsAdolescent2025} en jóvenes de 18 a 28 años ($n = 2,630$) mostró que el riesgo de intento de suicidio aumenta con cada déficit adicional en dimensiones como estabilidad económica, vivienda y acceso a salud. Según su modelo predictivo marginal, la probabilidad basal de un intento de suicidio antes de los 18 años pasa de 0.09 en adolescentes sin antecedentes de abuso y con estabilidad socioeconómica, a 0.24 en presencia de cuatro o más déficits de SDoH. Cuando la vulnerabilidad estructural se superpone a la victimización por ASI convencional y a formas de agresión digital, como el abuso sexual basado en imágenes (IBSA), esa probabilidad sube hasta 0.52 en los adolescentes que enfrentan ambas formas de trauma junto con múltiples desventajas socioambientales \cite{colburnCumulativeDeterminantsAdolescent2025}.
+
+En México, los modelos epidemiológicos univariados ya mostraban que la acumulación de estresores incrementa de forma conjunta la probabilidad de autolesión física. Al analizar la ENSANUT 2018-19, Rivera-Rivera et al. \cite{rivera-riveraPrevalenciaFactoresPsicologicos2020} estimaron una prevalencia nacional de ideación e intento de suicidio en adolescentes del 5.1\% y 3.9\%, respectivamente. Al ajustar los modelos de regresión, la sintomatología depresiva incrementaba 6.05 veces la probabilidad de un intento de suicidio (IC95\%: 4.75--7.73), y el antecedente de abuso sexual la elevaba 6.86 veces (IC95\%: 4.65--10.13); ambos factores se asociaban también con conductas de riesgo como el consumo de alcohol (RM = 2.15) y de tabaco (RM = 2.09).
+
+A nivel clínico, la transición entre el trauma primario y el intento de suicidio está mediada por el género, la desregulación emocional, los pensamientos rumiativos y la falta de redes de apoyo social \cite{cornejo-guerraConductasAutoliticasSuicidas2024}. En una muestra de 783 niños de 6 a 12 años expuestos a ASI, Hébert et al. \cite{hebertUnveilingSuicidalRisk2025} encontraron una prevalencia autoinformada de ideación suicida del 31.2\%, frente a 7.5\% en la población infantil general. Mediante modelos de árboles de decisión (CART), identificaron que el subgrupo con mayor riesgo autolítico inminente es aquel donde coinciden niveles clínicos de depresión y una desregulación emocional severa. Esta desregulación incapacita al adolescente para modular los estados afectivos dolorosos provocados por la agresión, y se combina además con la disociación traumática como facilitadora del intento físico.
+
+De acuerdo con el modelado de ecuaciones estructurales de Brokke et al. \cite{brokkeEffectSexualAbuse2022} en pacientes psiquiátricos, los síntomas disociativos median directamente el 68\% de la relación entre el antecedente de abuso sexual y el número total de intentos de suicidio a lo largo de la vida. La disociación sostenida funciona como un mecanismo de desconexión somática y cognitiva que reduce el miedo al dolor corporal y el instinto de autopreservación, confiriendo al adolescente la "capacidad adquirida" para ejecutar autolesiones potencialmente letales \cite{brokkeEffectSexualAbuse2022}. Por último, en el análisis mediante Machine Learning de la trayectoria del riesgo autolítico realizado por Niu et al. \cite{niuDecodingVitalVariables2025}, la sintomatología del TEPT y la ansiedad explican el origen de la ideación suicida inicial, pero es la pérdida de la autocompasión el factor que precipita la transición de la ideación al intento de suicidio físico en sobrevivientes de ASI, al eliminar el amortiguador que normalmente frena la autoculpabilización.
+
+\subsection{Modelos computacionales de predicción y sus brechas}
+
+Ante la baja sensibilidad diagnóstica y el limitado Valor Predictivo Positivo (PPV) de las escalas tradicionales de tamizaje clínico, frecuentemente por debajo del 25\%, la psiquiatría computacional ha adoptado el modelado predictivo de Machine Learning supervisado para identificar el riesgo autolítico de forma automatizada \cite{tangAnalysisEvaluationExplainable2024}. Walsh et al. \cite{walshPredictingSuicideAttempts2018}, en un estudio pionero con una cohorte retrospectiva de adolescentes, entrenaron algoritmos de \textit{Random Forest} con datos estructurados de expedientes clínicos electrónicos (EHR) y obtuvieron valores AUC-ROC de 0.83 a 0.85 frente a controles con otras autolesiones (OSI), y de 0.87 a 0.90 frente a pacientes con depresión activa, con un rendimiento que mejoraba cuanto más cercana estaba la fecha del intento de suicidio. De forma similar, Su et al. \cite{suMachineLearningSuicide2020} procesaron los registros longitudinales de 41,721 pacientes pediátricos de 10 a 18 años y construyeron, mediante selección secuencial de características, modelos con AUC-ROC estables de 0.81 a 0.86 en distintas ventanas temporales. Estos resultados muestran que es posible construir modelos de cribado de alta precisión y bajo costo, sin evaluaciones presenciales adicionales, usando únicamente covariables demográficas, diagnósticos de comorbilidad, registros farmacológicos e información de laboratorio recopilada de forma rutinaria en la consulta de primer nivel \cite{suMachineLearningSuicide2020}.
+
+A pesar del éxito predictivo de estos algoritmos, su adopción en los sistemas de salud pública se ha visto obstaculizada por su opacidad matemática, el problema de la "caja negra" \cite{tangAnalysisEvaluationExplainable2024}. Joyce et al. \cite{joyceExplainableArtificialIntelligence2023} en su marco conceptual TIFU (\textit{Transparency and Interpretability For Understandability}), sostienen que las decisiones médicas de alta trascendencia en psiquiatría exigen que el personal de salud no solo reciba un valor probabilístico de riesgo, sino que pueda comprender las razones detrás de la predicción. Esto es especialmente relevante dada la naturaleza multidimensional de los trastornos afectivos y los determinantes psicológicos concurrentes en poblaciones jóvenes \cite{joyceExplainableArtificialIntelligence2023}. En esa dirección, Nordin et al. \cite{nordinExplainableMachineLearning2022} han aplicado metodologías post-hoc de Inteligencia Artificial Explicable (XAI) mediante el enfoque agnóstico de valores SHAP (SHapley Additive exPlanations): al calcular la contribución marginal promedio de cada factor de riesgo, como la severidad de la depresión o la historia de intentos previos, estos valores permiten generar gráficos globales y representaciones locales de fuerza (\textit{force plots}) que muestran si un predictor empuja la probabilidad de riesgo en dirección positiva o negativa para un adolescente en particular \cite{nordinExplainableMachineLearning2022}. De esta manera, el modelo predictivo deja de ser una caja negra inescrutable y se convierte en un soporte de decisión clínica comprensible, capaz de guiar planes terapéuticos personalizados con perspectiva de trauma en la consulta de primer nivel \cite{joyceExplainableArtificialIntelligence2023,nordinExplainableMachineLearning2022}.
 
 \section{Planteamiento del problema}
 
-Formule el problema como una situación observable y argumentada, no como la
-ausencia de la solución que se desea construir. Distinga sus causas, efectos,
-personas o sistemas afectados y evidencia disponible. Delimite el estado actual
-y el estado deseable sin anticipar que una tecnología específica es la única
-respuesta posible.
+Los antecedentes expuestos sitúan al abuso sexual infantil (ASI) como un estresor traumático que, bajo el marco de la vulnerabilidad acumulada, interactúa con mediadores clínicos y determinantes sociales concurrentes para elevar de forma sostenida el riesgo de intento de suicidio en adolescentes mexicanos, mientras que el sistema de salud enfrenta barreras estructurales de denuncia y atención que dificultan su identificación oportuna (véase apartado 1.2). Lo que ese panorama no resuelve es cómo traducir esa complejidad biopsicosocial en una herramienta de detección concreta que el primer nivel de atención pueda usar con confianza.
 
-\subsection{Delimitación del problema}
+Durante décadas, la predicción estadística tradicional del riesgo suicida apenas ha logrado superar el nivel del azar \cite{linthicumMachineLearningSuicide2019}, y las escalas de cribado clínico vigentes mantienen una sensibilidad limitada \cite{tangAnalysisEvaluationExplainable2024}. Los algoritmos de Machine Learning sí han demostrado una exactitud discriminativa considerable en este problema (AUC-ROC de 0.81 a 0.90 \cite{suMachineLearningSuicide2020,walshPredictingSuicideAttempts2018}), pero esa ganancia predictiva tiene un costo: los modelos de mejor desempeño operan como cajas negras que no permiten a un profesional de salud comprender qué factores impulsan una alerta de riesgo en un caso particular, lo que exige transparencia e interpretabilidad como condición para su uso responsable en salud mental \cite{joyceExplainableArtificialIntelligence2023,linthicumMachineLearningSuicide2019}. Ya existen esfuerzos por dotar a estos modelos de explicabilidad mediante valores SHAP \cite{nordinExplainableMachineLearning2022}, pero hasta donde documenta la literatura revisada, ninguno ha sido diseñado y validado específicamente para adolescentes mexicanos con antecedente de ASI, ni ha resuelto de manera simultánea ambas exigencias (precisión predictiva e interpretabilidad clínica) a partir de una fuente de datos poblacional y representativa a nivel nacional como la ENSANUT.
 
-Precise el periodo, entorno, población, unidad de análisis, proceso o sistema al
-que se circunscribe el estudio. Declare qué aspectos cercanos al problema no se
-abordarán y por qué.
+Esta brecha tiene una consecuencia directa. Mientras no exista una herramienta de tamizaje que sea a la vez válida estadísticamente y comprensible clínicamente, el personal de primer nivel carece de un soporte objetivo para priorizar la atención de los adolescentes en mayor riesgo, y una proporción importante de intentos de suicidio potencialmente prevenibles seguirá sin ser anticipada a tiempo. El problema que esta investigación busca atender es, entonces, que no se sabe si es posible predecir el riesgo de intento de suicidio en adolescentes mexicanos con antecedente de ASI de una forma que sea, a la vez, suficientemente precisa para apoyar decisiones clínicas y suficientemente transparente para que el personal de primer nivel confíe en ella y la use, integrando la interacción entre el ASI y los demás factores biopsicosociales relevados por la ENSANUT Continua 2024.
 
 \section{Preguntas de investigación}
 \label{sec:preguntas-investigacion}
 
-\instruccion{Incluya una pregunta principal y, cuando sea necesario, preguntas
-específicas. Deben poder responderse con la evidencia que producirá la
-metodología. Evite preguntas que sólo puedan contestarse con ``sí'' o ``no'', o
-que describan una tarea de desarrollo en vez de una interrogante de
-conocimiento.}
-
 \begin{description}[leftmargin=2.2cm,labelwidth=1.7cm]
-  \item[RQ1.] ¿Pregunta principal que vincula el problema, el objeto de estudio y el resultado que se desea conocer?
-  \item[RQ1.1.] ¿Pregunta específica necesaria para responder la pregunta principal?
-  \item[RQ1.2.] ¿Pregunta específica necesaria para valorar la propuesta o explicar los resultados?
+  \item[RQ1.] ¿Es posible predecir el riesgo de intento de suicidio en adolescentes mexicanos de 10 a 19 años con antecedente de abuso sexual infantil (ASI) mediante un modelo de clasificación supervisada que sea, a la vez, preciso y clínicamente interpretable, a partir de los microdatos de la ENSANUT Continua 2024?
+  \item[RQ1.1.] ¿En qué medida el ASI se asocia con el intento de suicidio en esta población, y qué tan frecuente es su co-ocurrencia?
+  \item[RQ1.2.] De los factores biopsicosociales disponibles en la encuesta, ¿cuáles aportan mayor capacidad predictiva y justifican conservarse en el modelo final?
+  \item[RQ1.3.] Entre los algoritmos de clasificación supervisada evaluados, ¿cuál ofrece la mejor capacidad discriminativa para este problema?
+  \item[RQ1.4.] ¿Qué revelan los valores SHAP sobre el papel del ASI y los demás predictores en las decisiones del modelo, tanto a nivel individual como poblacional?
+  \item[RQ1.5.] ¿En qué medida se mantiene el desempeño del modelo al evaluarse sobre datos que no participaron en su entrenamiento?
 \end{description}
 
 \section{Hipótesis}
 \label{sec:hipotesis}
 
-\instruccion{Declare hipótesis cuando el diseño permita contrastar relaciones,
-diferencias, efectos o predicciones. Una hipótesis debe ser clara, falsable,
-congruente con las preguntas y operacionalizable mediante variables o criterios
-observables. En estudios cualitativos o exploratorios puede formularse un
-supuesto de trabajo o una proposición; explique y justifique la decisión
-metodológica. No se debe forzar una prueba estadística si el diseño no puede
-sostenerla.}
-
-\noindent\textbf{Hipótesis de investigación (H1).} Escriba la relación o efecto
-esperado, indicando población o contexto, variables y dirección cuando proceda.
-
-\noindent\textbf{Hipótesis nula (H0).} Escriba la formulación que será sometida
-a contraste, cuando el método lo requiera.
+\noindent\textbf{Hipótesis de investigación (H1).} Un modelo de clasificación supervisada que incorpore el abuso sexual infantil (ASI) y los demás factores biopsicosociales relevados por la ENSANUT Continua 2024 alcanzará una capacidad discriminativa clínicamente útil (AUC-ROC igual o mayor a 0.80) para predecir el intento de suicidio en adolescentes mexicanos de 10 a 19 años.
 
 \section{Objetivos}
 
 \subsection{Objetivo general}
 
-Redacte un único objetivo general con un verbo evaluable. Debe expresar el
-resultado central de la investigación, no una lista de actividades, y mantener
-correspondencia directa con el problema y la pregunta principal.
+Determinar en qué medida un modelo de clasificación supervisada, interpretable mediante Inteligencia Artificial Explicable (valores SHAP), permite estratificar el riesgo de intento de suicidio en adolescentes mexicanos de 10 a 19 años y explicar la contribución del abuso sexual infantil (ASI) y otros factores biopsicosociales, a partir de los microdatos de la Encuesta Nacional de Salud y Nutrición (ENSANUT) Continua 2024.
 
 \subsection{Objetivos específicos}
 
 \begin{enumerate}[label=OE\arabic*.]
-  \item Identificar o caracterizar el conocimiento necesario para abordar el problema.
-  \item Diseñar o construir la propuesta de ingeniería de software, si corresponde.
-  \item Evaluar o analizar la propuesta mediante evidencia definida en la metodología.
-  \item Interpretar los resultados respecto de las preguntas y la hipótesis.
+  \item Estimar la prevalencia del abuso sexual infantil (ASI) y su asociación con el intento de suicidio en la muestra de adolescentes de la ENSANUT Continua 2024, como base empírica que justifique la inclusión del ASI como variable de exposición central en la selección de predictores del modelo.
+  \item Identificar cuáles son los factores biopsicosociales con mayor capacidad predictiva del intento de suicidio, mediante Eliminación Recursiva de Características con Validación Cruzada (RFECV), con el fin de reducir la dimensionalidad del modelo sin sacrificar su capacidad discriminativa ni la interpretabilidad de sus predictores.
+  \item Comparar el desempeño de distintos algoritmos de clasificación supervisada (Regresión Logística, Random Forest, Gradient Boosting y Máquinas de Vectores de Soporte), entrenados con los datos de la ENSANUT, para identificar el modelo con mejor capacidad discriminativa.
+  \item Analizar la contribución individual y global de cada factor biopsicosocial en la predicción del riesgo, mediante la aplicación de Inteligencia Artificial Explicable (valores SHAP) sobre el modelo con mejor desempeño.
+  \item Evaluar si el modelo generaliza a datos no utilizados durante el entrenamiento y es apto para su uso en el primer nivel de atención, mediante su validación en un conjunto de prueba independiente.
 \end{enumerate}
 
 \section{Justificación}
 
-Argumente la relevancia del estudio desde las dimensiones que resulten
-pertinentes: científica, tecnológica, social, organizacional, económica,
-educativa o ambiental. Identifique beneficiarios y explique el valor de generar
-el conocimiento o artefacto propuesto. Diferencie relevancia de viabilidad.
+Este estudio responde a la necesidad de contar con un mecanismo de detección temprana del riesgo de intento de suicidio en adolescentes que sea, a la vez, clínicamente preciso y responsable en su aplicación. Las dinámicas de silencio y coacción que rodean al abuso sexual infantil producen un subregistro considerable en la atención posterior a la agresión, lo que deja a buena parte de los adolescentes en riesgo fuera del alcance de los servicios de salud. El valor social de este proyecto está en ofrecer al primer nivel de atención una herramienta de tamizaje que, al evaluar la interacción entre covariables clínicas y determinantes sociales de la salud, permita identificar a los adolescentes en mayor riesgo independientemente de que el abuso haya sido revelado o denunciado formalmente, lo que amplía la ventana de intervención antes de que la ideación suicida se convierta en un intento.
+
+Esta urgencia de intervención oportuna exige, como paso previo, someter a prueba empírica los marcos conceptuales vigentes sobre el riesgo autolítico, y en eso radica el principal valor teórico de este estudio. La literatura científica asocia de forma consistente el ASI con el intento de suicidio, pero la mayor parte de esa evidencia proviene de muestras clínicas u hospitalarias reducidas y geográficamente limitadas \cite{brokkeEffectSexualAbuse2022,hebertUnveilingSuicidalRisk2025,suMachineLearningSuicide2020,walshPredictingSuicideAttempts2018}. Al trasladar estas premisas al análisis de los microdatos de la ENSANUT Continua 2024, esta investigación evalúa si el trauma del ASI y sus mediadores psicopatológicos concurrentes, como la depresión y la desregulación emocional, se sostienen como predictores relevantes en una muestra con representatividad nacional, y no solo en poblaciones clínicas seleccionadas.
+
+Traducir este conocimiento teórico en un beneficio real depende, sin embargo, de resolver el problema de opacidad que limita la adopción clínica de los modelos de aprendizaje automático. Aunque estos algoritmos alcanzan una exactitud discriminativa considerable, su funcionamiento como caja negra dificulta que el personal de salud confíe en sus resultados y los use en la práctica \cite{tangAnalysisEvaluationExplainable2024,joyceExplainableArtificialIntelligence2023}. La relevancia tecnológica y metodológica de este trabajo consiste en construir un modelo que integra la explicabilidad mediante valores SHAP desde el diseño, y no como un añadido posterior \cite{nordinExplainableMachineLearning2022}, de modo que el personal de primer nivel pueda ver qué factores biopsicosociales impulsan cada predicción de riesgo.
 
 \section{Alcance de la investigación}
 
-Declare el alcance metodológico (por ejemplo, exploratorio, descriptivo,
-correlacional, explicativo, evaluativo o de diseño), el alcance funcional del
-artefacto y la cobertura de la evaluación. Las limitaciones observadas durante
-la ejecución se reportan y analizan nuevamente en el capítulo de conclusiones.
+Esta investigación tiene un alcance correlacional: busca determinar la relación entre el abuso sexual infantil (ASI) y los demás factores biopsicosociales con el intento de suicidio en adolescentes mexicanos, con fines predictivos y sin establecer relaciones de causalidad entre las variables. Se centra en la construcción de un modelo de clasificación supervisada e interpretable para estratificar ese riesgo, en adolescentes mexicanos de 10 a 19 años con y sin antecedente de abuso sexual infantil, a partir de los microdatos transversales de la ENSANUT Continua 2024. El estudio compara cuatro familias de algoritmos de clasificación supervisada (Regresión Logística, Random Forest, Gradient Boosting y Máquinas de Vectores de Soporte), selecciona el subconjunto de variables biopsicosociales más relevante mediante Eliminación Recursiva de Características con Validación Cruzada (RFECV), y aplica Inteligencia Artificial Explicable mediante valores SHAP sobre el modelo con mejor desempeño. No se aborda el desarrollo de una aplicación clínica desplegable ni la validación prospectiva del modelo en un entorno hospitalario real, que exceden los objetivos de este estudio.
+
+Una de las principales limitaciones es el diseño transversal de la ENSANUT: al recolectarse los datos en un único punto en el tiempo, el estudio permite establecer asociación entre los factores biopsicosociales y el intento de suicidio, pero no relaciones de causalidad. Asimismo, al tratarse de una encuesta representativa únicamente de la población mexicana, los resultados no se generalizan automáticamente a otros países o contextos culturales. Otra limitación relevante es que las variables sobre ASI e intento de suicidio provienen de autorreporte, lo que introduce un riesgo de subregistro dado el carácter sensible de estas conductas; para reducir este efecto, el análisis aplica el factor de expansión muestral de la propia encuesta, aunque el subregistro no se elimina por completo. Finalmente, la validación del modelo se limita al conjunto de prueba interno de la ENSANUT, sin una validación externa prospectiva en un entorno clínico real, por lo que su desempeño podría no replicarse exactamente al aplicarse fuera del contexto de la encuesta; por ello, se concibe como una herramienta de tamizaje poblacional para apoyar la priorización clínica, y no como un instrumento de diagnóstico individual en la práctica real.
 
 \section{Contribuciones esperadas}
 
-Enumere las contribuciones verificables: conocimiento empírico, modelo, método,
-conjunto de datos, arquitectura, prototipo, herramienta, evaluación, guía o
-lecciones transferibles. No confunda productos entregables con contribuciones
-de investigación.
+% TODO: Agregar contribuciones verificables: conocimiento empírico, modelo, método, evaluación o guía.
+Se espera que este proyecto aporte las siguientes contribuciones:
+\begin{itemize}
+    \item Un modelo de clasificación supervisada entrenado y validado en datos poblacionales de adolescentes mexicanos.
+    \item La identificación empírica de los predictores biopsicosociales más relevantes del riesgo suicida en este contexto poblacional.
+    \item La aplicación de Inteligencia Artificial Explicable (XAI) mediante valores SHAP para transparentar la contribución individual y global de dichos predictores.
+\end{itemize}
 
 \section{Organización de la tesis}
 
-Explique en un párrafo breve el propósito de cada capítulo y la relación lógica
-entre ellos. Evite repetir el índice.
+El Capítulo 1 presentó el problema, su planteamiento, la justificación y los objetivos que orientan la investigación. Los capítulos posteriores abordarán el estado del arte y marco teórico, la metodología empleada para el análisis de los datos de la ENSANUT, los resultados obtenidos del modelado predictivo, la discusión de estos hallazgos a la luz de la literatura previa, y finalmente, las conclusiones derivadas del estudio.
