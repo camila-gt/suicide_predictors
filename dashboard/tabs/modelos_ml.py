@@ -1,108 +1,89 @@
-from pathlib import Path
-
 import pandas as pd
 import streamlit as st
 
-from dashboard.data import load_comparacion_modelos, load_mejor_modelo_info
+from dashboard.data import artifact_root, load_comparacion_modelos, load_mejor_modelo_info
+from dashboard.presentation import render_figure, render_table
 
-ROOT = Path(__file__).parent.parent.parent
+METRIC_LABELS = {
+    "MCC": "MCC",
+    "Balanced accuracy": "balanced_accuracy",
+    "F1 macro": "f1_macro",
+    "Sensibilidad": "sensibilidad",
+    "Especificidad": "especificidad",
+    "PPV": "ppv",
+    "AUC-ROC": "auc_roc",
+}
+
+
+def comparison_table(comparison: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for _, model_scores in comparison.iterrows():
+        row = {"Modelo": model_scores["modelo"]}
+        for label, metric in METRIC_LABELS.items():
+            mean = model_scores[f"{metric}_media"]
+            standard_deviation = model_scores[f"{metric}_sd"]
+            row[label] = f"{mean:.3f} ± {standard_deviation:.3f}"
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def holdout_table(info: dict) -> pd.DataFrame:
+    intervals = info.get("incertidumbre", {}).get("intervals", {})
+    rows = []
+    for label, metric in METRIC_LABELS.items():
+        value = info["metricas_holdout"].get(metric)
+        interval = intervals.get(metric)
+        if interval:
+            interval_label = f"[{interval['lower']:.3f}, {interval['upper']:.3f}]"
+        else:
+            interval_label = "No disponible"
+        rows.append({"Métrica": label, "Valor": value, "IC 95% por UPM": interval_label})
+    return pd.DataFrame(rows)
+
+
+def show_figures() -> None:
+    directory = artifact_root() / "figuras"
+    figures = (
+        ("MCC", "clasificacion/17_comparacion_mcc.png", "MCC medio por algoritmo."),
+        (
+            "Matrices",
+            "clasificacion/16_matrices_confusion.png",
+            "Matrices de confusión de predicciones fuera de pliegue.",
+        ),
+        ("ROC", "clasificacion/18_curvas_roc.png", "Curvas ROC y AUC de predicciones agrupadas fuera de pliegue."),
+        ("Selección", "seleccion/15_rfecv_seleccion.png", "Selección de predictores mediante RFECV sobre desarrollo."),
+    )
+    tabs = st.tabs([label for label, _, _ in figures])
+    for tab, (_, filename, caption) in zip(tabs, figures, strict=True):
+        with tab:
+            render_figure(directory / filename, caption)
 
 
 def render() -> None:
-    st.subheader("Modelado predictivo con machine learning (KDD)")
-    st.info(
-        "En esta pestaña se comparan 4 algoritmos de clasificación supervisada entrenados en Python "
-        "para predecir el riesgo de intento de suicidio (Intentó vs. Nunca) a partir del perfil bio-psico-social del adolescente."
-    )
-
-    # El modelo binario se consolidó como el mejor y más robusto
-    mode = "bin"
-
-    # Carga de datos
-    df_comp = load_comparacion_modelos(mode)
-    info = load_mejor_modelo_info(mode)
-
-    if df_comp.empty or not info:
-        st.warning(
-            "No se encontraron resultados para este modo de modelado. Asegúrate de ejecutar el pipeline primero."
-        )
+    st.subheader("Comparación de clasificadores")
+    comparison = load_comparacion_modelos()
+    info = load_mejor_modelo_info()
+    if comparison.empty or not info:
+        st.warning("Ejecuta el pipeline para generar la evaluación.")
         return
-
-    # Destacar mejor modelo
-    st.markdown("### Mejor modelo seleccionado")
-    col1, col2 = st.columns([2, 3])
-    with col1:
-        st.metric(
-            label="Algoritmo ganador (por MCC)",
-            value=info["mejor_modelo"],
-        )
-    with col2:
-        mcc_val = info["metricas_cv"]["MCC_media"]
-        f1_val = info["metricas_cv"]["f1_macro_media"]
-        bal_acc = info["metricas_cv"]["balanced_accuracy_media"]
-
-        c1, c2, c3 = st.columns(3)
-        c1.metric("MCC promedio", f"{mcc_val:.3f}")
-        c2.metric("F1-score macro", f"{f1_val:.3f}")
-        c3.metric("Balanced accuracy", f"{bal_acc:.3f}")
-
-    st.caption("Métricas promedio evaluadas mediante validación cruzada estratificada de 5 Folds.")
-    st.divider()
-
-    # Tabla comparativa de todos los modelos
-    st.markdown("### Tabla comparativa de rendimiento")
-    st.caption("Matthews Correlation Coefficient (MCC) es la métrica principal debido al fuerte desbalance del target.")
-
-    # Formatear la tabla para mostrar media ± sd
-    df_disp = pd.DataFrame()
-    df_disp["Modelo"] = df_comp["modelo"]
-    df_disp["MCC"] = df_comp.apply(lambda r: f"{r['MCC_media']:.3f} ± {r['MCC_sd']:.3f}", axis=1)
-    df_disp["Balanced accuracy"] = df_comp.apply(
-        lambda r: f"{r['balanced_accuracy_media']:.3f} ± {r['balanced_accuracy_sd']:.3f}", axis=1
-    )
-    df_disp["F1-score macro"] = df_comp.apply(lambda r: f"{r['f1_macro_media']:.3f} ± {r['f1_macro_sd']:.3f}", axis=1)
-
-    st.dataframe(df_disp, hide_index=True, width="stretch")
-    st.divider()
-
-    # Imágenes estáticas generadas por el pipeline de ML
-    st.markdown("### Visualización del rendimiento y errores")
-
-    fig_comp = ROOT / "figuras" / "clasificacion" / "17_comparacion_mcc.png"
-    if not fig_comp.exists():
-        fig_comp = ROOT / "figuras" / "clasificacion" / f"17_comparacion_mcc_{mode}.png"
-
-    if fig_comp.exists():
-        st.image(
-            str(fig_comp),
-            caption="Comparación del Matthews Correlation Coefficient (MCC) por algoritmo.",
-            width="stretch",
-        )
-    else:
-        st.caption("Ejecuta el pipeline de ML para generar la gráfica de barras de MCC.")
-
-    st.write("")  # Espaciado vertical
-
-    fig_cm = ROOT / "figuras" / "clasificacion" / "16_matrices_confusion.png"
-    if not fig_cm.exists():
-        fig_cm = ROOT / "figuras" / "clasificacion" / f"16_matrices_confusion_{mode}.png"
-
-    if fig_cm.exists():
-        st.image(
-            str(fig_cm),
-            caption="Matrices de confusión Out-of-Fold (CV) de los 4 clasificadores.",
-            width="stretch",
-        )
-    else:
-        st.caption("Ejecuta el pipeline de ML para generar las matrices de confusión.")
-
-    st.divider()
-
-    # Documentación técnica
-    with st.expander("Decisiones de ingeniería de datos y modelado (KDD)"):
-        st.markdown(f"""
-        * **Target:** El modelo predice la columna `{info["target"]}`.
-        * **Selección de características (Feature Selection):** Solo se introducen las `{len(info["features"])}` variables más significativas filtradas de forma automática mediante **Recursive Feature Elimination (RFECV)**.
-        * **Desbalance de Clases:** Se implementa balanceo de pesos de clase (`class_weight='balanced'`) en todos los algoritmos para evitar el sesgo hacia la clase mayoritaria (no intento).
-        * **Validación Cruzada Estratificada (5-Fold):** Garantiza que las evaluaciones de rendimiento sean generalizables y libres de fugas de información (*data leakage*).
-        """)
+    st.metric("Algoritmo seleccionado por MCC medio", info["mejor_modelo"])
+    cv_tab, test_tab = st.tabs(["Validación cruzada", "Prueba interna"])
+    with cv_tab:
+        render_table(comparison_table(comparison))
+        st.caption("Media y desviación entre pliegues de desarrollo; métricas no ponderadas.")
+    with test_tab:
+        if info.get("metricas_holdout"):
+            render_table(holdout_table(info))
+        else:
+            st.info("No hay resultados de prueba interna en esta ejecución.")
+    st.subheader("Figuras de evaluación y selección")
+    show_figures()
+    with st.expander("Configuración del experimento"):
+        development_count = info.get("n_dev", "N/D")
+        test_count = info.get("n_test", "N/D")
+        st.write(f"Desarrollo: {development_count}; prueba: {test_count} participantes.")
+        st.write(f"Predictores del modelo final: {len(info['features'])}.")
+        st.write("La selección se realiza dentro de cada entrenamiento externo y puede variar entre pliegues.")
+        if "config" in info:
+            st.json(info["config"])
+        st.caption("La evaluación es interna. No acredita validación prospectiva ni utilidad clínica.")

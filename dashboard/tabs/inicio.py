@@ -26,11 +26,11 @@ def render(df: pd.DataFrame) -> None:
         población nacional de adolescentes.
 
         **Navegación del dashboard:**
-        - **Muestra** — Prevalencias ponderadas con filtros interactivos.
-        - **Métodos de intento** — Frecuencias de métodos de autolesión reportados por sexo y edad.
-        - **Modelos de ML** — Evaluación científica y comparativa de los 4 algoritmos de Machine Learning entrenados.
-        - **Interpretabilidad SHAP** — Explicabilidad del riesgo a nivel global e individual con teoría de juegos.
-        - **Predicción interactiva** — Simulador clínico en tiempo real de riesgo suicida individualizado.
+        - **Muestra** — Prevalencias ponderadas y desgloses por sexo y grupo de edad.
+        - **Métodos de intento** — Frecuencias muestrales de los métodos reportados.
+        - **Modelos de ML** — Comparación de cuatro clasificadores y evaluación interna.
+        - **Interpretabilidad SHAP** — Contribuciones de los predictores a la salida del modelo.
+        - **Predicción interactiva** — Simulador académico del antecedente de intento con perfiles ficticios.
         - **Mapa geográfico** — Distribución territorial de casos de ASI en la República Mexicana.
         """
     )

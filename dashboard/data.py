@@ -1,134 +1,79 @@
-"""Carga y caché de datos y modelos para el dashboard de Streamlit."""
-
 import json
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 from joblib import load
+from sklearn.pipeline import Pipeline
 
-# Raíz del proyecto
-ROOT: Path = Path(__file__).parent.parent
+from suicide_predictors.artifacts import PROJECT_ROOT, active_workspace
+
+ROOT = PROJECT_ROOT
 
 
-@st.cache_data
-def load_df() -> pd.DataFrame:
-    """Carga el dataset de adolescentes limpio con tipos correctos.
+def begin_snapshot() -> None:
+    st.session_state["_artifact_workspace"] = str(active_workspace(ROOT))
 
-    Fuerza la columna ``grupo_edad`` como ``Categorical`` ordenado para que
-    Plotly no interprete "10-12" como una fecha.
 
-    Returns:
-        DataFrame con los datos descriptivos limpios.
-    """
-    df = pd.read_csv(ROOT / "data" / "adolescentes_limpio.csv")
-    df["grupo_edad"] = pd.Categorical(
-        df["grupo_edad"],
-        categories=["10-12", "13-15", "16-19"],
-        ordered=True,
-    )
-    return df
+def artifact_root() -> Path:
+    snapshot = st.session_state.get("_artifact_workspace")
+    return Path(snapshot) if snapshot is not None else active_workspace(ROOT)
+
+
+def signature(path: Path) -> tuple[str, int, int]:
+    stat = path.stat()
+    return str(path), stat.st_mtime_ns, stat.st_size
 
 
 @st.cache_data
-def load_ml_df() -> pd.DataFrame:
-    """Carga el dataset codificado para Machine Learning.
-
-    Returns:
-        DataFrame con la matriz de características codificadas para ML.
-    """
-    return pd.read_csv(ROOT / "data" / "adolescentes_ml.csv")
+def _csv(path: str, modified: int, size: int) -> pd.DataFrame:
+    return pd.read_csv(path)
 
 
 @st.cache_data
-def load_comparacion_modelos(mode: str = "bin") -> pd.DataFrame:
-    """Carga la tabla comparativa de rendimiento de los modelos.
-
-    Busca primero la ruta canónica y, si no existe, la ruta con sufijo de modo.
-
-    Args:
-        mode: Sufijo del modo de modelado (por defecto ``"bin"``).
-
-    Returns:
-        DataFrame con métricas CV de los 4 modelos, o DataFrame vacío si no existe.
-    """
-    p = ROOT / "output" / "clasificacion" / "comparacion_modelos.csv"
-    if not p.exists():
-        p = ROOT / "output" / "clasificacion" / f"comparacion_modelos_{mode}.csv"
-    return pd.read_csv(p) if p.exists() else pd.DataFrame()
-
-
-@st.cache_data
-def load_shap_importancia(mode: str = "bin") -> pd.DataFrame:
-    """Carga la tabla de importancias SHAP globales.
-
-    Args:
-        mode: Sufijo del modo de modelado (por defecto ``"bin"``).
-
-    Returns:
-        DataFrame con importancias SHAP, o DataFrame vacío si no existe.
-    """
-    p = ROOT / "output" / "shap" / "shap_importancia.csv"
-    if not p.exists():
-        p = ROOT / "output" / "shap" / f"shap_importancia_{mode}.csv"
-    return pd.read_csv(p) if p.exists() else pd.DataFrame()
-
-
-@st.cache_data
-def load_mejor_modelo_info(mode: str = "bin") -> dict:
-    """Carga los metadatos del mejor modelo entrenado.
-
-    Args:
-        mode: Sufijo del modo de modelado (por defecto ``"bin"``).
-
-    Returns:
-        Diccionario con los metadatos del modelo, o diccionario vacío si no existe.
-    """
-    p = ROOT / "output" / "clasificacion" / "mejor_modelo_info.json"
-    if not p.exists():
-        p = ROOT / "output" / "clasificacion" / f"mejor_modelo_info_{mode}.json"
-    if p.exists():
-        with open(p, encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+def _json(path: str, modified: int, size: int) -> dict:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 @st.cache_resource
-def load_mejor_modelo(mode: str = "bin"):
-    """Carga el mejor modelo serializado con joblib.
-
-    Args:
-        mode: Sufijo del modo de modelado (por defecto ``"bin"``).
-
-    Returns:
-        Modelo scikit-learn cargado, o ``None`` si no existe el archivo.
-    """
-    p = ROOT / "output" / "clasificacion" / "mejor_modelo.joblib"
-    if not p.exists():
-        p = ROOT / "output" / "clasificacion" / f"mejor_modelo_{mode}.joblib"
-    return load(p) if p.exists() else None
+def _model(path: str, modified: int, size: int) -> Pipeline:
+    return load(path)
 
 
-@st.cache_data
+def load_df() -> pd.DataFrame:
+    frame = _csv(*signature(artifact_root() / "data" / "adolescentes_limpio.csv"))
+    frame["grupo_edad"] = pd.Categorical(frame["grupo_edad"], categories=["10-12", "13-15", "16-19"], ordered=True)
+    return frame
+
+
+def load_ml_df() -> pd.DataFrame:
+    return _csv(*signature(artifact_root() / "data" / "adolescentes_ml.csv"))
+
+
+def load_comparacion_modelos(mode: str = "bin") -> pd.DataFrame:
+    path = artifact_root() / "output" / "clasificacion" / "comparacion_modelos.csv"
+    return _csv(*signature(path)) if path.exists() else pd.DataFrame()
+
+
+def load_shap_importancia(mode: str = "bin") -> pd.DataFrame:
+    path = artifact_root() / "output" / "shap" / "shap_importancia.csv"
+    return _csv(*signature(path)) if path.exists() else pd.DataFrame()
+
+
+def load_mejor_modelo_info(mode: str = "bin") -> dict:
+    path = artifact_root() / "output" / "clasificacion" / "mejor_modelo_info.json"
+    return _json(*signature(path)) if path.exists() else {}
+
+
+def load_mejor_modelo(mode: str = "bin") -> Pipeline | None:
+    path = artifact_root() / "output" / "clasificacion" / "mejor_modelo.joblib"
+    return _model(*signature(path)) if path.exists() else None
+
+
 def load_geojson() -> dict:
-    """Carga el GeoJSON de estados de México.
-
-    Returns:
-        Diccionario con la geometría de los estados.
-    """
-    with open(ROOT / "data" / "states_simple.geojson", encoding="utf-8") as f:
-        return json.load(f)
+    return _json(*signature(ROOT / "data" / "states_simple.geojson"))
 
 
-def load_all() -> tuple:
-    """Carga todos los datasets esenciales de una vez.
-
-    Returns:
-        Tupla ``(df, ml_df, geojson)`` con los tres datasets principales.
-    """
-    with st.spinner("Cargando base de datos y modelos..."):
-        return (
-            load_df(),
-            load_ml_df(),
-            load_geojson(),
-        )
+def load_all() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    with st.spinner("Cargando datos y modelos..."):
+        return load_df(), load_ml_df(), load_geojson()

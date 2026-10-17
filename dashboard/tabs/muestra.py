@@ -3,6 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.config import AGRESOR_LBL, ATENCION_LBL, COLOR_CON_ASI, COLOR_SIN_ASI, RAZON_LBL
+from dashboard.presentation import render_plotly, render_table
 
 W = "ponderador"
 
@@ -21,18 +22,15 @@ def render(df: pd.DataFrame) -> None:
     def _tabla_etiquetas(serie: pd.Series, labels: dict) -> pd.DataFrame:
         serie_lbl = serie.map(labels).dropna()
         if serie_lbl.empty:
-            return pd.DataFrame(columns=["Categoria", "n", "%"])
+            return pd.DataFrame(columns=["Categoria", "n", "% muestral"])
         counts = serie_lbl.value_counts().rename_axis("Categoria").reset_index(name="n")
         total = counts["n"].sum()
-        counts["%"] = (counts["n"] / total * 100).round(1)
+        counts["% muestral"] = (counts["n"] / total * 100).round(1)
         return counts
-
-    def _altura_tabla(tabla: pd.DataFrame, base: int = 36, header: int = 38) -> int:
-        return header + max(len(tabla), 1) * base
 
     st.info(
         "Prevalencias ponderadas con el factor de expansión muestral de la ENSANUT 2024. "
-        "Los tamaños de muestra (n) se reportan sin ponderar."
+        "Los tamaños de muestra (n) y los porcentajes de las tablas descriptivas son muestrales, sin ponderar."
     )
 
     desenlace = st.radio(
@@ -43,7 +41,7 @@ def render(df: pd.DataFrame) -> None:
 
     col_var = "ideacion" if desenlace == "Ideación suicida" else "intento"
     df_f = df
-    etiq = "Muestra Total (n = 3,674)"
+    etiq = f"Muestra total (n = {len(df_f):,})"
 
     if df_f.empty:
         st.info("No hay datos para la selección actual.")
@@ -77,7 +75,7 @@ def render(df: pd.DataFrame) -> None:
         yaxis_range=[0, stats["prev_pct"].max() * 1.4 + 3],
     )
 
-    st.plotly_chart(fig, width="stretch")
+    render_plotly(fig)
 
     st.subheader("Desglose por sexo y grupo de edad")
     col_a, col_b = st.columns(2)
@@ -103,7 +101,7 @@ def render(df: pd.DataFrame) -> None:
             template=template,
         )
         fig2.update_layout(margin={"l": 40, "r": 20, "t": 50, "b": 40})
-        st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
+        render_plotly(fig2, height=320)
 
     with col_b, st.container(border=True):
         rows_edad = []
@@ -132,7 +130,7 @@ def render(df: pd.DataFrame) -> None:
         )
         fig3.update_xaxes(type="category")
         fig3.update_layout(margin={"l": 40, "r": 20, "t": 50, "b": 40})
-        st.plotly_chart(fig3, width="stretch", config={"displayModeBar": False})
+        render_plotly(fig3, height=320)
 
     st.divider()
 
@@ -144,29 +142,14 @@ def render(df: pd.DataFrame) -> None:
         with fila_sup_a:
             st.markdown("**Agresor**")
             tabla_agresor = _tabla_etiquetas(asi_df["parentesco_agresor"], AGRESOR_LBL)
-            st.dataframe(
-                tabla_agresor,
-                hide_index=True,
-                width="stretch",
-                height=_altura_tabla(tabla_agresor),
-            )
+            render_table(tabla_agresor)
 
         with fila_sup_b:
             st.markdown("**Atencion tras ASI**")
             tabla_atencion = _tabla_etiquetas(asi_df["atencion_tras_asi"], ATENCION_LBL)
-            st.dataframe(
-                tabla_atencion,
-                hide_index=True,
-                width="stretch",
-                height=_altura_tabla(tabla_atencion),
-            )
+            render_table(tabla_atencion)
 
         st.markdown("**Razon de no denuncia**")
         base_no_denuncia = asi_df[asi_df["denuncia_asi"] == 2]
         tabla_razon = _tabla_etiquetas(base_no_denuncia["razon_no_denuncia"], RAZON_LBL)
-        st.dataframe(
-            tabla_razon,
-            hide_index=True,
-            width="stretch",
-            height=_altura_tabla(tabla_razon),
-        )
+        render_table(tabla_razon)

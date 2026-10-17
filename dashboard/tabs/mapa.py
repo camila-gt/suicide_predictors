@@ -3,6 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.config import CODIGO_A_NOMBRE
+from dashboard.presentation import render_plotly, render_table
 
 
 def render(df: pd.DataFrame, geojson: dict) -> None:
@@ -19,7 +20,7 @@ def render(df: pd.DataFrame, geojson: dict) -> None:
     mapa_df["casos_asi"] = mapa_df["casos_asi"].fillna(0).astype(int)
     mapa_df["total"] = mapa_df["total"].fillna(0).astype(int)
     mapa_df["prevalencia_pct"] = mapa_df.apply(
-        lambda r: round(r["casos_asi"] / r["total"] * 100, 1) if r["total"] > 0 else 0.0,
+        lambda r: round(r["casos_asi"] / r["total"] * 100, 1) if r["total"] > 0 else float("nan"),
         axis=1,
     )
     mapa_df["nombre"] = mapa_df["entidad"].map(CODIGO_A_NOMBRE)
@@ -51,7 +52,8 @@ def render(df: pd.DataFrame, geojson: dict) -> None:
         template=template,
     )
     fig_mapa.update_layout(margin={"l": 0, "r": 0, "t": 50, "b": 0})
-    st.plotly_chart(fig_mapa, width="stretch")
+    fig_mapa.update_coloraxes(colorbar={"orientation": "h", "len": 0.7, "x": 0.5, "xanchor": "center", "y": -0.1})
+    render_plotly(fig_mapa, height=440)
 
     with st.expander("Ver tabla de datos por entidad"):
         tabla_mapa = (
@@ -66,4 +68,4 @@ def render(df: pd.DataFrame, geojson: dict) -> None:
             )
             .sort_values("Prevalencia (%)", ascending=False)
         )
-        st.dataframe(tabla_mapa, hide_index=True, width="stretch")
+        render_table(tabla_mapa)

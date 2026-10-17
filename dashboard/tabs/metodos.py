@@ -1,8 +1,11 @@
+from textwrap import fill
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
 from dashboard.config import COLOR_CON_ASI, METODO_LBL
+from dashboard.presentation import render_plotly
 
 
 def render(df: pd.DataFrame) -> None:
@@ -37,7 +40,9 @@ def render(df: pd.DataFrame) -> None:
     )
     fig_met.update_traces(textposition="outside")
     fig_met.update_layout(coloraxis_showscale=False, yaxis_title="")
-    st.plotly_chart(fig_met, width="stretch")
+    wrapped_labels = [fill(label, width=22).replace("\n", "<br>") for label in freq_df["Método"]]
+    fig_met.update_yaxes(tickmode="array", tickvals=freq_df["Método"], ticktext=wrapped_labels)
+    render_plotly(fig_met, height=420)
 
     st.caption(
         "Un mismo caso puede reportar más de un método. "
