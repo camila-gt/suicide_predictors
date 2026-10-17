@@ -8,6 +8,8 @@ __pycache__/
 .streamlit/
 Docs/
 .ruff_cache/
+output/runs/
+output/current.json
 # LaTeX build files
 *.aux
 *.bbl
