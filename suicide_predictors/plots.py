@@ -136,7 +136,6 @@ def save_exploration(fig: Figure, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
         fig.savefig(path, dpi=300, facecolor="white")
-        fig.savefig(path.with_suffix(".pdf"), facecolor="white")
     finally:
         plt.close(fig)
 
@@ -503,7 +502,7 @@ def plot_attempt_by_asi(data: pd.DataFrame, path: Path) -> None:
 
 
 def explore(data: pd.DataFrame, workspace: Path) -> None:
-    directory = workspace / "figuras" / "exploracion"
+    directory = workspace / "exploracion"
     rows = []
     for column, label in (
         ("asi", "ASI"),
@@ -519,7 +518,7 @@ def explore(data: pd.DataFrame, workspace: Path) -> None:
                 "Denominador (n)": int(data[column].notna().sum()),
             }
         )
-    output = workspace / "output" / "estadistica"
+    output = workspace / "exploracion"
     output.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(output / "prevalencias_crudas.csv", index=False)
     plot_sex_distribution(data, directory / "01_distribucion_sexo.png")
@@ -653,9 +652,9 @@ def shap_figures(importance: pd.Series, explanation, directory: Path, *, model_n
 def classification_figures(
     comparison: pd.DataFrame, predictions: pd.DataFrame, curve: pd.DataFrame, n_selected: int, workspace: Path
 ) -> None:
-    directory = workspace / "figuras" / "clasificacion"
+    directory = workspace / "clasificacion"
     plot_confusion_matrices(comparison, predictions, directory)
     plot_model_comparison(comparison, directory)
     plot_roc_curves(comparison, predictions, directory)
-    selection_path = workspace / "figuras" / "seleccion" / "15_rfecv_seleccion.png"
+    selection_path = workspace / "seleccion" / "15_rfecv_seleccion.png"
     plot_selection_curve(curve, n_selected, selection_path)

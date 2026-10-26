@@ -42,7 +42,7 @@ def holdout_table(info: dict) -> pd.DataFrame:
 
 
 def show_figures() -> None:
-    directory = artifact_root() / "figuras"
+    directory = artifact_root()
     figures = (
         ("MCC", "clasificacion/17_comparacion_mcc.png", "MCC medio por algoritmo."),
         (

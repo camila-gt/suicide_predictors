@@ -23,7 +23,7 @@ from dashboard.tabs.modelos_ml import METRIC_LABELS
 
 def write_images(workspace: Path, relative_paths: list[str]) -> None:
     for relative in relative_paths:
-        path = workspace / "figuras" / relative
+        path = workspace / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         with Image.new("RGB", (1200, 900), "white") as image:
             image.save(path)
@@ -66,8 +66,6 @@ class DashboardPresentationTests(unittest.TestCase):
             with Image.new("RGB", (2400, 1800), "white") as image:
                 image.save(path)
             original_png = path.read_bytes()
-            pdf = path.with_suffix(".pdf")
-            pdf.write_bytes(b"%PDF-1.4\noriginal")
             with (
                 patch("dashboard.presentation.st.container"),
                 patch("dashboard.presentation.st.image") as display,
@@ -76,7 +74,7 @@ class DashboardPresentationTests(unittest.TestCase):
                 render_figure(path, "Figura de prueba")
             self.assertEqual(display.call_args.kwargs["width"], fitted_image_width(2400, 1800))
             self.assertEqual(download.call_args_list[0].kwargs["data"], original_png)
-            self.assertEqual(download.call_args_list[1].kwargs["data"], pdf.read_bytes())
+            download.assert_called_once()
             self.assertEqual(path.read_bytes(), original_png)
 
     def test_missing_figure_is_reported_without_reading_an_image(self):

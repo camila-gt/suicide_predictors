@@ -388,7 +388,7 @@ def save_validation_results(
     comparison: pd.DataFrame,
     baseline: pd.DataFrame,
 ) -> None:
-    output = workspace / "output" / "clasificacion"
+    output = workspace / "clasificacion"
     output.mkdir(parents=True, exist_ok=True)
     partitions = frame[["row_id", "upm", "estrato"]].copy()
     partitions["partition"] = "test"
@@ -409,7 +409,7 @@ def save_selection_results(
     selected_columns: list[str],
     selections: list[dict],
 ) -> pd.DataFrame:
-    output = workspace / "output" / "seleccion"
+    output = workspace / "seleccion"
     output.mkdir(parents=True, exist_ok=True)
     ranking = pd.DataFrame({"feature": feature_names, "ranking": selector.ranking_, "seleccionada": selector.support_})
     ranking.to_csv(output / "ranking_features.csv", index=False)
@@ -436,7 +436,7 @@ def save_test_results(
     final_model: Pipeline,
     model_info: dict,
 ) -> None:
-    output = workspace / "output" / "clasificacion"
+    output = workspace / "clasificacion"
     output.mkdir(parents=True, exist_ok=True)
     dump(evaluation.model, output / "modelo_evaluado.joblib")
     dump(final_model, output / "mejor_modelo.joblib")

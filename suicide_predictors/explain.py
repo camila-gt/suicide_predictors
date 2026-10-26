@@ -15,10 +15,10 @@ def explain(
 
     if min(sample_size, background_size, permutations) < 1:
         raise ValueError("Las muestras y las permutaciones deben ser positivas")
-    model_path = workspace / "output" / "clasificacion" / "mejor_modelo.joblib"
+    model_path = workspace / "clasificacion" / "mejor_modelo.joblib"
     model = load(model_path)
     columns = list(model.named_steps["columns"].columns)
-    data = pd.read_csv(workspace / "data" / "adolescentes_ml.csv")
+    data = pd.read_csv(workspace / "preprocesamiento" / "adolescentes_ml.csv")
     X = data[columns].copy()
     sample = shap.utils.sample(X, min(sample_size, len(X)), random_state=seed)
     background = shap.utils.sample(X, min(background_size, len(X)), random_state=seed)
@@ -35,7 +35,7 @@ def explain(
     model_probability = positive_probability(sample)
     if not np.allclose(reconstructed_probability, model_probability, atol=1e-6):
         raise ValueError("Las contribuciones SHAP no reconstruyen la probabilidad explicada")
-    output = workspace / "output" / "shap"
+    output = workspace / "shap"
     output.mkdir(parents=True, exist_ok=True)
     mean_absolute_contribution = np.abs(values).mean(axis=0)
     importance = pd.Series(mean_absolute_contribution, index=columns)
@@ -54,7 +54,7 @@ def explain(
     shap_figures(
         importance,
         explanation,
-        workspace / "figuras" / "shap",
+        workspace / "shap",
         model_name=model.named_steps["model"].kind,
     )
     info = {

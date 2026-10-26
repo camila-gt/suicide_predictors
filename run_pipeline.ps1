@@ -40,7 +40,7 @@ if (-not $SoloDashboard) {
     $PipelineArguments = @("-m", "suicide_predictors", "run", "--jobs", "$Hilos", "--bootstrap", "$Bootstrap")
     if ($OmitirShap) { $PipelineArguments += "--skip-shap" }
     Invoke-Checked -Executable $Python -Arguments $PipelineArguments
-    Write-Host "Pipeline completado. La ejecucion activa contiene datos, modelos y figuras de la misma version."
+    Write-Host "Pipeline completado. output/ contiene los unicos resultados vigentes, organizados por etapa."
 }
 
 if (-not $NoDashboard) {

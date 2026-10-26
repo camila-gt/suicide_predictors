@@ -1,7 +1,7 @@
 import hashlib
 import json
 import os
-from datetime import UTC, datetime
+import shutil
 from importlib.metadata import version
 from pathlib import Path
 from uuid import uuid4
@@ -24,24 +24,17 @@ def write_json(path: Path, value: dict | list) -> None:
 
 
 def active_workspace(root: Path = PROJECT_ROOT) -> Path:
-    pointer = root / "output" / "current.json"
-    if not pointer.exists():
-        return root
-    current = json.loads(pointer.read_text(encoding="utf-8"))
-    workspace = (root / current["workspace"]).resolve()
-    runs = (root / "output" / "runs").resolve()
-    if not workspace.is_relative_to(runs):
-        raise ValueError("La ejecución activa está fuera del directorio de artefactos")
-    manifest = json.loads((workspace / "manifest.json").read_text(encoding="utf-8"))
-    if manifest["status"] != "complete":
-        raise ValueError("La ejecución activa no está completa")
-    return workspace
+    return root / "output"
 
 
 def create_workspace(root: Path = PROJECT_ROOT) -> Path:
-    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "_" + uuid4().hex[:8]
-    workspace = root / "output" / "runs" / run_id
-    workspace.mkdir(parents=True, exist_ok=False)
+    workspace = root / ".pipeline-work"
+    try:
+        workspace.mkdir(parents=True, exist_ok=False)
+    except FileExistsError as error:
+        raise ValueError(
+            "Ya existe un temporal .pipeline-work; comprueba que no haya otro pipeline ejecutándose"
+        ) from error
     return workspace
 
 
@@ -49,7 +42,23 @@ def publish(workspace: Path, root: Path = PROJECT_ROOT) -> None:
     manifest = json.loads((workspace / "manifest.json").read_text(encoding="utf-8"))
     if manifest["status"] != "complete":
         raise ValueError("Solo se puede publicar una ejecución completa")
-    write_json(root / "output" / "current.json", {"workspace": workspace.relative_to(root).as_posix()})
+    output = active_workspace(root)
+    backup = root / ".output-backup"
+    if workspace.resolve() == output.resolve():
+        raise ValueError("La publicación requiere un directorio temporal independiente")
+    if backup.exists():
+        raise ValueError("Existe un respaldo de publicación pendiente: .output-backup")
+    had_output = output.exists()
+    if had_output:
+        output.rename(backup)
+    try:
+        workspace.rename(output)
+    except Exception:
+        if had_output:
+            backup.rename(output)
+        raise
+    if had_output:
+        shutil.rmtree(backup)
 
 
 def environment() -> dict[str, str]:
@@ -63,13 +72,11 @@ def environment() -> dict[str, str]:
 
 
 def artifact_hashes(workspace: Path) -> dict[str, str]:
-    hashes = {}
-    for directory in ("data", "output", "figuras"):
-        for path in (workspace / directory).rglob("*"):
-            if path.is_file():
-                relative_path = path.relative_to(workspace).as_posix()
-                hashes[relative_path] = file_hash(path)
-    return hashes
+    return {
+        path.relative_to(workspace).as_posix(): file_hash(path)
+        for path in sorted(workspace.rglob("*"))
+        if path.is_file() and path.name != "manifest.json"
+    }
 
 
 def source_hash(root: Path = PROJECT_ROOT) -> str:

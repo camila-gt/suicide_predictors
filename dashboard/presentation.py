@@ -44,16 +44,6 @@ def render_figure(path: Path, caption: str) -> None:
             key=f"figure_png_{path.stem}",
             on_click="ignore",
         )
-        pdf = path.with_suffix(".pdf")
-        if pdf.is_file():
-            st.download_button(
-                "Descargar PDF",
-                data=pdf.read_bytes(),
-                file_name=pdf.name,
-                mime="application/pdf",
-                key=f"figure_pdf_{path.stem}",
-                on_click="ignore",
-            )
 
 
 def render_table(data: pd.DataFrame, *, hide_index: bool = True) -> None:

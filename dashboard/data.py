@@ -41,32 +41,32 @@ def _model(path: str, modified: int, size: int) -> Pipeline:
 
 
 def load_df() -> pd.DataFrame:
-    frame = _csv(*signature(artifact_root() / "data" / "adolescentes_limpio.csv"))
+    frame = _csv(*signature(artifact_root() / "preprocesamiento" / "adolescentes_limpio.csv"))
     frame["grupo_edad"] = pd.Categorical(frame["grupo_edad"], categories=["10-12", "13-15", "16-19"], ordered=True)
     return frame
 
 
 def load_ml_df() -> pd.DataFrame:
-    return _csv(*signature(artifact_root() / "data" / "adolescentes_ml.csv"))
+    return _csv(*signature(artifact_root() / "preprocesamiento" / "adolescentes_ml.csv"))
 
 
 def load_comparacion_modelos(mode: str = "bin") -> pd.DataFrame:
-    path = artifact_root() / "output" / "clasificacion" / "comparacion_modelos.csv"
+    path = artifact_root() / "clasificacion" / "comparacion_modelos.csv"
     return _csv(*signature(path)) if path.exists() else pd.DataFrame()
 
 
 def load_shap_importancia(mode: str = "bin") -> pd.DataFrame:
-    path = artifact_root() / "output" / "shap" / "shap_importancia.csv"
+    path = artifact_root() / "shap" / "shap_importancia.csv"
     return _csv(*signature(path)) if path.exists() else pd.DataFrame()
 
 
 def load_mejor_modelo_info(mode: str = "bin") -> dict:
-    path = artifact_root() / "output" / "clasificacion" / "mejor_modelo_info.json"
+    path = artifact_root() / "clasificacion" / "mejor_modelo_info.json"
     return _json(*signature(path)) if path.exists() else {}
 
 
 def load_mejor_modelo(mode: str = "bin") -> Pipeline | None:
-    path = artifact_root() / "output" / "clasificacion" / "mejor_modelo.joblib"
+    path = artifact_root() / "clasificacion" / "mejor_modelo.joblib"
     return _model(*signature(path)) if path.exists() else None
 
 

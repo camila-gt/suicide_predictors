@@ -18,7 +18,7 @@ def render() -> None:
     )
     with st.expander("Tabla de importancia de predictores"):
         render_table(importance.rename(columns={"feature": "Predictor", "importancia_shap": "Media |SHAP|"}))
-    root = artifact_root() / "figuras" / "shap"
+    root = artifact_root() / "shap"
     figures = (
         (
             "Importancia global",

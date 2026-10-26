@@ -10,7 +10,7 @@ import pandas as pd
 from joblib import dump, load
 
 from suicide_predictors.__main__ import main
-from suicide_predictors.artifacts import active_workspace, publish, write_json
+from suicide_predictors.artifacts import active_workspace, artifact_hashes, create_workspace, publish, write_json
 from suicide_predictors.estimators import ApplicabilityImputer, SurveyClassifier, balanced_weights, prediction_pipeline
 from suicide_predictors.explain import explain
 from suicide_predictors.inference import prediction_frame
@@ -93,7 +93,7 @@ def synthetic_frame(n=80):
 
 
 class PreparationTests(unittest.TestCase):
-    def test_prepare_generates_original_target_figure(self):
+    def test_prepare_generates_target_figure(self):
         descriptive_fields = {
             "d0811": np.nan,
             "d0812": np.nan,
@@ -110,9 +110,9 @@ class PreparationTests(unittest.TestCase):
             pd.DataFrame(rows).to_csv(raw_path, sep=";", index=False, encoding="utf-8-sig")
             _, ml = prepare(raw_path, workspace)
             self.assertEqual(ml.intento_bin.tolist(), [0, 1])
-            figure = workspace / "figuras/preprocesamiento/14_target_intento_frecuencias.png"
+            figure = workspace / "preprocesamiento/14_target_intento_frecuencias.png"
             self.assertTrue(figure.is_file())
-            self.assertTrue(figure.with_suffix(".pdf").is_file())
+            self.assertFalse(figure.with_suffix(".pdf").exists())
 
     def test_partial_negative_stays_unknown(self):
         result = any_positive(pd.DataFrame([[2, np.nan], [1, np.nan], [2, 2]]))
@@ -432,16 +432,77 @@ class InferenceTests(unittest.TestCase):
 
 
 class ArtifactTests(unittest.TestCase):
-    def test_failed_run_cannot_replace_active_pointer(self):
+    def test_failed_run_cannot_replace_current_results(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            good, bad = root / "output/runs/good", root / "output/runs/bad"
+            good, bad = root / "good", root / "bad"
             write_json(good / "manifest.json", {"status": "complete"})
             write_json(bad / "manifest.json", {"status": "failed"})
             publish(good, root)
             with self.assertRaises(ValueError):
                 publish(bad, root)
-            self.assertEqual(active_workspace(root), good)
+            self.assertEqual(active_workspace(root), root / "output")
+            self.assertEqual(json.loads((root / "output/manifest.json").read_text())["status"], "complete")
+
+    def test_publication_replaces_all_old_results_without_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_json(root / "output/stale.json", {})
+            fresh = root / ".pipeline-work"
+            write_json(fresh / "manifest.json", {"status": "complete"})
+            write_json(fresh / "clasificacion/new.json", {})
+            publish(fresh, root)
+            self.assertTrue((root / "output/clasificacion/new.json").is_file())
+            self.assertFalse((root / "output/stale.json").exists())
+            self.assertFalse(fresh.exists())
+            self.assertFalse((root / ".output-backup").exists())
+            self.assertFalse((root / "output/current.json").exists())
+
+    def test_publication_rolls_back_if_new_directory_cannot_be_moved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_json(root / "output/old.json", {"preserved": True})
+            fresh = create_workspace(root)
+            write_json(fresh / "manifest.json", {"status": "complete"})
+            original_rename = Path.rename
+
+            def fail_new_directory(path, target):
+                if path == fresh:
+                    raise OSError("Publication failed")
+                return original_rename(path, target)
+
+            with patch.object(Path, "rename", fail_new_directory), self.assertRaises(OSError):
+                publish(fresh, root)
+            self.assertTrue((root / "output/old.json").is_file())
+            self.assertFalse((root / ".output-backup").exists())
+
+    def test_workspace_rejects_concurrent_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_workspace(root)
+            with self.assertRaises(ValueError):
+                create_workspace(root)
+
+    def test_hashes_cover_stages_but_exclude_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            write_json(workspace / "manifest.json", {})
+            write_json(workspace / "seleccion/features.json", {})
+            self.assertEqual(set(artifact_hashes(workspace)), {"seleccion/features.json"})
+
+    def test_failed_default_run_cleans_temporary_and_preserves_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_json(root / "output/manifest.json", {"status": "complete"})
+            with (
+                patch("suicide_predictors.__main__.initial_manifest", return_value={}),
+                patch("suicide_predictors.__main__.create_workspace", side_effect=lambda: create_workspace(root)),
+                patch("suicide_predictors.__main__.execute_stages", side_effect=RuntimeError("Stage failed")),
+                self.assertRaises(RuntimeError),
+            ):
+                main(["run"])
+            self.assertFalse((root / ".pipeline-work").exists())
+            self.assertEqual(json.loads((root / "output/manifest.json").read_text())["status"], "complete")
 
     def test_existing_run_is_not_overwritten(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -466,10 +527,10 @@ class ArtifactTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp)
-            (workspace / "data").mkdir()
-            frame.to_csv(workspace / "data/adolescentes_ml.csv", index=False)
+            (workspace / "preprocesamiento").mkdir()
+            frame.to_csv(workspace / "preprocesamiento/adolescentes_ml.csv", index=False)
             info = train(frame, workspace, config)
-            directory = workspace / "output/clasificacion"
+            directory = workspace / "clasificacion"
             self.assertEqual(info["n_dev"] + info["n_test"], len(frame))
             self.assertTrue((directory / "modelo_evaluado.joblib").is_file())
             self.assertTrue((directory / "predicciones_oof.csv").is_file())
@@ -478,7 +539,7 @@ class ArtifactTests(unittest.TestCase):
             self.assertEqual(model.predict_proba(frame[info["features"]]).shape, (len(frame), 2))
             explanation = explain(workspace, sample_size=6, background_size=5, permutations=1)
             self.assertEqual(explanation["output"], "positive_class_probability")
-            self.assertTrue((workspace / "output/shap/explicaciones.npz").exists())
+            self.assertTrue((workspace / "shap/explicaciones.npz").exists())
 
 
 if __name__ == "__main__":

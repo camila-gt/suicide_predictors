@@ -103,7 +103,7 @@ class ExplorationPlotTests(unittest.TestCase):
         self.assertIn("Mujer: n = 2", note)
         self.assertIn("Total: n = 4", note)
 
-    def test_original_sex_palette_and_pie_are_restored(self):
+    def test_sex_distribution_uses_pie_and_sex_palette(self):
         self.assertEqual(SEX_COLORS, {"Hombre": "#89b4fa", "Mujer": "#f5c2e7"})
         with patch("suicide_predictors.plots.save_exploration") as save:
             plot_sex_distribution(descriptive_frame(), Path("unused.png"))
@@ -131,21 +131,20 @@ class ExplorationPlotTests(unittest.TestCase):
         self.assertFalse(axes.patches)
         self.assertIn("Sin respuestas disponibles", axes.texts[0].get_text())
 
-    def test_exploration_exports_png_and_pdf_without_changing_statistics(self):
+    def test_exploration_exports_only_png_without_changing_statistics(self):
         data = descriptive_frame()
         original = data.copy(deep=True)
         original_font_size = plt.rcParams["font.size"]
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp)
             explore(data, workspace)
-            directory = workspace / "figuras/exploracion"
+            directory = workspace / "exploracion"
             png_files = sorted(directory.glob("*.png"))
             pdf_files = sorted(directory.glob("*.pdf"))
             self.assertEqual(len(png_files), 13)
-            self.assertEqual(len(pdf_files), 13)
+            self.assertEqual(len(pdf_files), 0)
             self.assertEqual(plt.imread(png_files[0]).shape[1], 1650)
-            self.assertTrue(all(path.read_bytes().startswith(b"%PDF-") for path in pdf_files))
-            statistics = pd.read_csv(workspace / "output/estadistica/prevalencias_crudas.csv").set_index("Variable")
+            statistics = pd.read_csv(workspace / "exploracion/prevalencias_crudas.csv").set_index("Variable")
             self.assertEqual(statistics.loc["ASI", "Prevalencia_ponderada (%)"], 50)
             self.assertEqual(statistics.loc["Intento de suicidio", "Prevalencia_ponderada (%)"], 60)
             self.assertEqual(statistics.loc["Ideación suicida", "Denominador (n)"], 3)
@@ -171,7 +170,7 @@ class PipelineFigureStyleTests(unittest.TestCase):
     def setUp(self):
         self.addCleanup(plt.close, "all")
 
-    def test_target_distribution_restores_original_colors_and_counts(self):
+    def test_target_distribution_uses_class_colors_and_counts(self):
         with patch("suicide_predictors.plots.save") as save:
             plot_target_distribution(pd.Series([0, 0, 0, 1]), Path("unused.png"))
         axes = save.call_args.args[0].axes[0]
@@ -198,7 +197,7 @@ class PipelineFigureStyleTests(unittest.TestCase):
         self.assertTrue(all(to_hex(bar.get_facecolor()) == PALETTE["mauve"] for bar in axes.patches))
         pd.testing.assert_frame_equal(comparison, original)
 
-    def test_roc_restores_each_models_original_color(self):
+    def test_roc_uses_model_colors(self):
         from sklearn.metrics import roc_curve
 
         comparison, predictions, _ = model_plot_data()
@@ -223,7 +222,7 @@ class PipelineFigureStyleTests(unittest.TestCase):
         np.testing.assert_equal(axes.lines[0].get_ydata(), curve["mean_test_score"])
         np.testing.assert_equal(axes.lines[1].get_xdata(), [4, 4])
 
-    def test_shap_importance_restores_original_blue(self):
+    def test_shap_importance_uses_blue(self):
         from suicide_predictors.plots import bar
 
         importance = pd.Series([0.1, 0.03], index=["asi", "edad"])
@@ -247,11 +246,11 @@ class PipelineFigureStyleTests(unittest.TestCase):
             workspace = Path(tmp)
             classification_figures(comparison, predictions, curve, 4, workspace)
             plot_target_distribution(
-                pd.Series([0, 0, 0, 1]), workspace / "figuras/preprocesamiento/14_target_intento_frecuencias.png"
+                pd.Series([0, 0, 0, 1]), workspace / "preprocesamiento/14_target_intento_frecuencias.png"
             )
-            shap_figures(importance, explanation, workspace / "figuras/shap", model_name="Regresión Logística")
-            self.assertEqual(len(list((workspace / "figuras").rglob("*.png"))), 7)
-            self.assertEqual(len(list((workspace / "figuras").rglob("*.pdf"))), 7)
+            shap_figures(importance, explanation, workspace / "shap", model_name="Regresión Logística")
+            self.assertEqual(len(list(workspace.rglob("*.png"))), 7)
+            self.assertEqual(len(list(workspace.rglob("*.pdf"))), 0)
         np.testing.assert_array_equal(explanation.values, values)
         np.testing.assert_array_equal(explanation.data, data)
         self.assertFalse(plt.get_fignums())

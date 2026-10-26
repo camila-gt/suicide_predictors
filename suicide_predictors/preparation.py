@@ -297,7 +297,7 @@ def prepare(raw_path: Path, workspace: Path) -> tuple[pd.DataFrame, pd.DataFrame
     raw = pd.read_csv(raw_path, sep=";", encoding="utf-8-sig", low_memory=False)
     descriptive = build_descriptive(raw)
     ml = build_ml(raw)
-    directory = workspace / "data"
+    directory = workspace / "preprocesamiento"
     directory.mkdir(parents=True, exist_ok=True)
     descriptive.to_csv(directory / "adolescentes_limpio.csv", index=False, encoding="utf-8-sig")
     ml.to_csv(directory / "adolescentes_ml.csv", index=False, encoding="utf-8-sig")
@@ -310,6 +310,6 @@ def prepare(raw_path: Path, workspace: Path) -> tuple[pd.DataFrame, pd.DataFrame
         }
     )
     quality.to_csv(directory / "calidad_predictores.csv", index=False)
-    target_figure = workspace / "figuras" / "preprocesamiento" / "14_target_intento_frecuencias.png"
+    target_figure = workspace / "preprocesamiento" / "14_target_intento_frecuencias.png"
     plot_target_distribution(ml[TARGET], target_figure)
     return descriptive, ml

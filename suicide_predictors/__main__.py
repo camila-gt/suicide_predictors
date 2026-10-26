@@ -1,6 +1,8 @@
 import argparse
 import logging
+import shutil
 from dataclasses import asdict
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -62,6 +64,7 @@ def initial_manifest(args: argparse.Namespace, config: ExperimentConfig) -> dict
     return {
         "schema_version": SCHEMA_VERSION,
         "status": "running",
+        "started_at": datetime.now(UTC).isoformat(),
         "config": asdict(config),
         "raw_sha256": file_hash(args.raw),
         "source_sha256": source_hash(),
@@ -75,7 +78,7 @@ def resolve_workspace(args: argparse.Namespace) -> Path:
     elif args.command == "run":
         workspace = create_workspace()
     else:
-        workspace = PROJECT_ROOT
+        workspace = PROJECT_ROOT / "output"
     if (workspace / "manifest.json").exists():
         raise ValueError("La ejecución ya existe. Usa un directorio nuevo para conservar los artefactos.")
     if args.command == "run":
@@ -90,11 +93,11 @@ def execute_stages(args: argparse.Namespace, workspace: Path, config: Experiment
     if args.command in ("run", "explore"):
         from suicide_predictors.plots import explore
 
-        descriptive_path = workspace / "data" / "adolescentes_limpio.csv"
+        descriptive_path = workspace / "preprocesamiento" / "adolescentes_limpio.csv"
         descriptive = pd.read_csv(descriptive_path)
         explore(descriptive, workspace)
     if args.command in ("run", "train"):
-        ml_path = workspace / "data" / "adolescentes_ml.csv"
+        ml_path = workspace / "preprocesamiento" / "adolescentes_ml.csv"
         frame = pd.read_csv(ml_path)
         train(frame, workspace, config)
     if args.command in ("run", "explain") and not args.skip_shap:
@@ -106,6 +109,7 @@ def execute_stages(args: argparse.Namespace, workspace: Path, config: Experiment
 def complete_run(args: argparse.Namespace, workspace: Path, manifest: dict) -> None:
     manifest.update(
         status="complete",
+        completed_at=datetime.now(UTC).isoformat(),
         shap_enabled=not args.skip_shap,
         artifacts=artifact_hashes(workspace),
     )
@@ -133,6 +137,9 @@ def main(argv: list[str] | None = None) -> None:
             manifest.update(status="failed", error=str(error))
             write_json(workspace / "manifest.json", manifest)
         raise
+    finally:
+        if args.command == "run" and args.workspace is None and workspace.exists():
+            shutil.rmtree(workspace)
 
 
 if __name__ == "__main__":

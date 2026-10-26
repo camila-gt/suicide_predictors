@@ -16,13 +16,15 @@ st.set_page_config(
     layout="wide",
 )
 
+if (Path(__file__).resolve().parent.parent / ".pipeline-work").exists():
+    st.info("El pipeline está ejecutándose. Espera a que termine para consultar los resultados.")
+    st.stop()
 begin_snapshot()
-df, ml_df, geojson = load_all()
 if not (artifact_root() / "manifest.json").exists():
-    st.warning(
-        "Aún no hay una ejecución publicada del pipeline actual. Los artefactos existentes son solo de consulta."
-    )
-elif load_mejor_modelo_info().get("schema_version") != SCHEMA_VERSION:
+    st.info("Aún no hay resultados vigentes. Ejecuta el pipeline completo para generarlos.")
+    st.stop()
+df, ml_df, geojson = load_all()
+if load_mejor_modelo_info().get("schema_version") != SCHEMA_VERSION:
     st.warning(
         "Los resultados visibles usan un esquema anterior. Ejecuta el pipeline para generar los resultados actuales."
     )
