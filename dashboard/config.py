@@ -31,7 +31,7 @@ METODO_LBL = {
     "metodo_arma_fuego": "Arma de fuego",
     "metodo_quemadura": "Quemadura",
     "metodo_cortantes": "Objetos cortantes",
-    "metodo_arrojarse": "Arrojarse al vacío",
+    "metodo_arrojarse": "Arrojarse al vacío o vehículo en movimiento",
 }
 
 AGRESOR_LBL = {

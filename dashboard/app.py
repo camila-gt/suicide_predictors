@@ -6,25 +6,36 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 
-from dashboard.data import load_all
+from dashboard.data import artifact_root, begin_snapshot, load_all, load_mejor_modelo_info
 from dashboard.tabs import inicio, mapa, metodos, modelos_ml, muestra, prediccion, shap_interpretabilidad
+from suicide_predictors import SCHEMA_VERSION
 
 st.set_page_config(
-    page_title="Predicción de Riesgo Suicida – ENSANUT 2024",
+    page_title="Clasificación de antecedente de intento – ENSANUT 2024",
     page_icon="🔬",
     layout="wide",
 )
 
-# Carga de datos
+if (Path(__file__).resolve().parent.parent / ".pipeline-work").exists():
+    st.info("El pipeline está ejecutándose. Espera a que termine para consultar los resultados.")
+    st.stop()
+begin_snapshot()
+if not (artifact_root() / "manifest.json").exists():
+    st.info("Aún no hay resultados vigentes. Ejecuta el pipeline completo para generarlos.")
+    st.stop()
 df, ml_df, geojson = load_all()
+if load_mejor_modelo_info().get("schema_version") != SCHEMA_VERSION:
+    st.warning(
+        "Los resultados visibles usan un esquema anterior. Ejecuta el pipeline para generar los resultados actuales."
+    )
 
 # Sidebar
 with st.sidebar:
     st.markdown(
-        "<h2 style='text-align: center; margin-top: 0px; font-weight: 700;'>🔬 Riesgo suicida</h2>",
+        "<h2 style='text-align: center; margin-top: 0px; font-weight: 700;'>🔬 Clasificación de intento</h2>",
         unsafe_allow_html=True,
     )
-    st.caption("Predicción en adolescentes · ENSANUT 2024")
+    st.caption("Antecedente de intento · ENSANUT 2024")
     st.divider()
 
     # Menú de navegación
