@@ -34,23 +34,21 @@ Opciones adicionales:
 | `-Hilos 4` | Limita el paralelismo; por defecto, `-1`. |
 | `-Bootstrap 500` | Número de remuestreos por UPM; `0` los desactiva. |
 
-También puede ejecutarse el análisis con `python -m suicide_predictors run` desde el entorno instalado. El código está en `suicide_predictors/`; no existe una entrada `src/`.
+También puede ejecutarse el análisis con `python -m suicide_predictors run` desde el entorno instalado.
 
 ## Dónde están los resultados
 
-Cada ejecución completa tiene una carpeta propia:
+`output/` es la única fuente de resultados vigentes. Cada etapa reúne sus figuras PNG a 300 dpi, tablas y demás artefactos:
 
 ```text
-output/runs/<identificador>/
-├── data/          Bases descriptiva y ML; calidad de predictores
-├── output/        Evaluación, modelos, selección y explicaciones
-├── figuras/       PNG a 300 dpi y PDF vectoriales
-└── manifest.json  Estado, configuración, entorno y hashes
+output/
+├── preprocesamiento/  Bases descriptiva y ML, calidad y figura del desenlace
+├── exploracion/       Figuras descriptivas y prevalencias
+├── seleccion/         RFECV, predictores y estabilidad
+├── clasificacion/     Figuras, métricas, predicciones y modelos
+├── shap/              Figuras, importancias y explicaciones
+└── manifest.json      Fechas, configuración, entorno y hashes
 ```
-
-`output/current.json` indica qué ejecución consulta el dashboard. Solo se actualiza tras completar correctamente el análisis; una ejecución fallida no sustituye la anterior. Por defecto se generan **20 figuras**: 13 exploratorias, una de preprocesamiento, una de selección, tres de clasificación y dos SHAP.
-
-Las carpetas de ejecuciones y el puntero están ignorados por Git. Permanecen accesibles en el disco para el usuario y para una IA con acceso local, pero no se incluyen automáticamente en el repositorio remoto. Evita publicar microdatos individuales sin revisar las condiciones de uso.
 
 ## Procedimiento
 
@@ -68,17 +66,6 @@ La partición de prueba es interna y fue inspeccionada previamente; no constituy
 - `mejor_modelo.joblib`: modelo de demostración ajustado con la muestra analítica completa, utilizado por el simulador y SHAP.
 
 Ambos incluyen selección de columnas y preprocesamiento. Las métricas de prueba corresponden al primero, no al modelo de demostración.
-
-## Documentación local
-
-- `Docs/md/pipeline.md`: arquitectura y metodología implementada.
-- `Docs/md/variables.md`: reactivos, codificación y aplicabilidad.
-- `Docs/md/dashboard.md`: navegación y presentación de resultados.
-- `Docs/md/resultados.md`: resultados vinculados a una ejecución identificada.
-- `Docs/md/figuras_apa.md`: inventario y notas de las figuras.
-- `Docs/md/guia.md`: recorrido técnico de lectura.
-
-`Docs/` está ignorado por Git; estos documentos son locales. La redacción de la tesis se mantiene separada en `tesis/`.
 
 ## Desarrollo
 
